@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet">
+
+
+  
+
+
+
+
+  <meta name="description" content="卷积神经网络: A Modular Perspective &amp;quot;译自:http://colah.github.io/posts/2014-07-Conv-Nets-Modular/">
+<meta name="keywords" content="Deep Learning,Paper Translation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ConvNets: A Modular Perspective">
+<meta property="og:url" content="/2019/08/31/ConvNets/index.html">
+<meta property="og:site_name" content="SuRui&#39;s Blog">
+<meta property="og:description" content="卷积神经网络: A Modular Perspective &amp;quot;译自:http://colah.github.io/posts/2014-07-Conv-Nets-Modular/">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="/2019/08/31/ConvNets/img1.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/img2.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/img3.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/img4.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/img5.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/img6.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/img7.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv2-unit.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv2-9x5-Conv2.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv2-9x5-Conv2Conv2.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv2-9x5-Conv2Max2Conv2.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv-A.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv-A-NIN.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/KSH-arch.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/KSH-results.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/KSH-filters.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv-9-Conv2-XY.png">
+<meta property="og:image" content="/2019/08/31/ConvNets/Conv2-5x5-Conv2-XY.png">
+<meta property="og:updated_time" content="2020-04-17T08:38:20.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ConvNets: A Modular Perspective">
+<meta name="twitter:description" content="卷积神经网络: A Modular Perspective &amp;quot;译自:http://colah.github.io/posts/2014-07-Conv-Nets-Modular/">
+<meta name="twitter:image" content="/2019/08/31/ConvNets/img1.png">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="/2019/08/31/ConvNets/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>ConvNets: A Modular Perspective | SuRui's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SuRui's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">We make our own luck.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/2019/08/31/ConvNets/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ray">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuRui's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ConvNets: A Modular Perspective
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-08-31 10:30:00" itemprop="dateCreated datePublished" datetime="2019-08-31T10:30:00+08:00">2019-08-31</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-04-17 16:38:20" itemprop="dateModified" datetime="2020-04-17T16:38:20+08:00">2020-04-17</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>卷积神经网络: A Modular Perspective</p>
+<p>&quot;译自:<a href="http://colah.github.io/posts/2014-07-Conv-Nets-Modular/" target="_blank" rel="noopener">http://colah.github.io/posts/2014-07-Conv-Nets-Modular/</a></p>
+<a id="more"></a>
+<h2 id="卷积神经网络-a-modular-perspective"><a class="markdownIt-Anchor" href="#卷积神经网络-a-modular-perspective"></a> 卷积神经网络: A Modular Perspective</h2>
+<p>&quot;<em>译自:<a href="http://colah.github.io/posts/2014-07-Conv-Nets-Modular/" target="_blank" rel="noopener">http://colah.github.io/posts/2014-07-Conv-Nets-Modular/</a></em></p>
+<h3 id="写在前面"><a class="markdownIt-Anchor" href="#写在前面"></a> 写在前面</h3>
+<p>  这是我理论上的第一篇博客。之前也零零碎碎的写过一些东西，但一直没搞清楚自己想写什么。Time flies，转眼硕士毕业两年，也正式工作两年了，大大小小的做了很多项目。但有时还是感觉空虚，总感觉没沉淀下来太多东西，忙碌于做项目而没时间静下来思考。尤其今年觉得压力很大，2019年的夏天过去了，是时候冷静下来思考一些东西了。<br>
+  这个系列&lt;卷积神经网络&gt;我打算写四篇文章，作为深度学习的入门系列，其中前两篇是我翻译的大牛的文章，也是让我看完有醍醐灌顶感觉的好文章。另外两篇是我工作这两年对一些概念的理解。</p>
+<h3 id="介绍"><a class="markdownIt-Anchor" href="#介绍"></a> 介绍</h3>
+<p>  近年来，深度神经网络已经在模式识别的很多问题上取得了突破性成果，例如计算机视觉和语音识别。能够产生这些成果的至关重要的组成部分之一是一个特殊类型的神经网络称为<em>卷积神经网络</em>。<br>
+  最基本的，卷积神经网络可以被认为是一种使用很多相同神经元相同复制的神经网络。这允许网络有大量的神经元并且在保持实际需要被学习的参数量（这个值用于描述神经元的行为）相当少时，表达计算量较大的模型。</p>
+<center><img src="/2019/08/31/ConvNets/img1.png"></center>
+<center><i>A 2D Convolutional Neural Network</i></center>
+&emsp;&emsp;同一个神经元复制多个副本的技巧，大概类似于数学和计算机科学里面的抽象方法。当编程的时候，一个函数写了一次并且可以在很多地方使用-而不是在不同的地方相同的代码写上百次，这样编程更快，也会有更少的bug出现。类似的，一个卷积神经网络能够学习出一个神经元一次并且在很多地方使用，让模型更容易学习而且减少错误。
+<h3 id="卷积神经网络的结构"><a class="markdownIt-Anchor" href="#卷积神经网络的结构"></a> 卷积神经网络的结构</h3>
+<p>  假设你想要一个神经网络来观察语音样本，来预测一个人是否在讲话。可能某人说话的时候你想做更多的分析。<br>
+  你在不同的时间点得到了语音样本。样本在空间中间隔均匀。</p>
+<center><img src="/2019/08/31/ConvNets/img2.png"></center>
+&emsp;&emsp;最简单的方式就是尝试使用神经网络连接全部的输入到全连接层中，对这些样本进行分类。有一堆不同的神经元，并且每个输入都需要和每个神经元相连接，下图的F代表全连接层。
+<center><img src="/2019/08/31/ConvNets/img3.png"></center>
+&emsp;&emsp;一个更复杂的方法在数据特征中注意到了一种对称性，这是有助于发掘数据的。我们很关心数据的局部特性：在给定的时间里声音的频率是怎样的？它们是上升的还是下降?等等。 
+&emsp;&emsp;我们关心全部时间点的相同属性。这是有用的对于知道开始时刻、中间时刻、结束时刻的频率。重复一下，注意这些都是局部属性，如果为了确定这些属性我们只需要观察一个小窗内的语音样本即可。 
+&emsp;&emsp;所以我们可以创造一组神经元A，用于观察我们数据的小时间片段。A观察全部的片段，计算某些特征。然后卷积层$A$的结果输入到全连接层F。 
+<center><img src="/2019/08/31/ConvNets/img4.png"></center>
+&emsp;&emsp;在上面的例子中，A只观察有两个点组成的片段。这不是实际的卷积，通常一个卷积层的窗口会更大一些。
+&emsp;&emsp;在下面的例子中A观察3个点。那也不是实际的卷积-遗憾的是很难可视化A连接很多的点。
+<center><img src="/2019/08/31/ConvNets/img5.png"></center>
+&emsp;&emsp;卷积层的一个非常好的属性是他们是组合的。你可以把一个卷积层的输出传入到另外一层中。随着层数的增多，网络能够检测出更高水平，更抽象的特征。
+&emsp;&emsp;在下面的例子中，我们有一组新的神经元，B，B被用于创建另外一层卷积堆叠在前一层卷积的上面。
+<center><img src="/2019/08/31/ConvNets/img6.png"></center>
+&emsp;&emsp;卷积层经常和池化层交错使用。尤其是最大值池化层尤为普遍。
+&emsp;&emsp;对于一段音频来分析某人是否说话，通常从一个高层次的角度看，我们不关心特征出现的准确时间点。如果一个频率的变化稍微早一点或稍微晚一点有什么关系吗？
+&emsp;&emsp;一个最大池化层把前一层的小块特征中的最大值得到。这一层的输出告诉我们是否一个特征在前一层的一个区域出现了，但是不会告诉我们准确的位置。
+&emsp;&emsp;最大池化层是一种“缩小”。他们让后来的层能够在对于原始数据来说更大的范围上寻找特征，因为池化之后的一个小块对应于前一层更大的块。他们可以让数据对于一些小的变换产生不变性。比如位置稍微改变，特征也不会有太变化。
+<center><img src="/2019/08/31/ConvNets/img7.png"></center>
+&emsp;&emsp;在我们之前的例子中，我们使用了一维卷积层。然而卷积层也是能够在高维度数据上工作的。事实上，最有名卷积神经网络最成功的案例是使用二维卷积神经网络做图像识别。
+<div align="center"><img src="/2019/08/31/ConvNets/Conv2-unit.png" style="width:200px;height:140px"></div> 
+&emsp;&emsp;在二维的卷积层中，A神经元不再用于观察时间片段，而是用于观察一个二维数据块的特征。
+&emsp;&emsp;对于每个数据块，A神经元用于计算特征。例如，可以学习去检测边缘的存在。或者学习去检测一个纹理。或许是两种颜色之间的比对。
+<center><img src="/2019/08/31/ConvNets/Conv2-9x5-Conv2.png"></center>
+&emsp;&emsp;在之前的例子中，我们把卷积层的输出输入到全连接层中。我们也能够组合两个卷积层，就想我们在前面给出的一维数据的例子一样。
+<center><img src="/2019/08/31/ConvNets/Conv2-9x5-Conv2Conv2.png"></center>
+&emsp;&emsp;我们也可以在二维数据里面使用最大池化。这里，我们把一个小块的特征的最大值提取出来。
+&emsp;&emsp;实际上可以归结为，当考虑整个图像时，我们不关心边缘的确切位置到一个像素。只要知道它在几像素内的位置就足够了。
+&emsp;&emsp;当我们考虑一整副图像时，我们不关注一个边缘的确切位置到某个像素，但是通过几个像素我们足以知道它的位置。
+<center><img src="/2019/08/31/ConvNets/Conv2-9x5-Conv2Max2Conv2.png"></center>
+&emsp;&emsp;三维的卷积神经网络有时候也会被用到，比如视频数据或者体积数据（例如：3D医学扫描）。但是他们没有被广泛使用，而且可视化更加困难。
+&emsp;&emsp;现在，我们把之前说的A看作是一组神经元。我们应该更加明确一件事情：A到底是什么？
+&emsp;&emsp;在传统的卷积层中，A是一串并行的神经元，全部的神经元得到相同的输入并计算出不同的特征，这里的每个神经元就是一个卷积核。
+&emsp;&emsp;例如，在一个二维的卷积层中，一个神经元可能用于检测水平的边缘，另一个神经元可能用于检测垂直的边缘，另一个可能用于检测绿色和红色的对比。
+<center><img src="/2019/08/31/ConvNets/Conv-A.png"></center>
+&emsp;&emsp;即便如此，有一篇文章[“Network in Network”(Lin et al.(2013))](https://arxiv.org/abs/1312.4400)，提出了一个“Mlpconv”层。在这个模型中，A有多层神经元以及输出这块区域更高水平特征的最后一层。在这篇文章中，模型产生了一些非常令人印象深刻的结果，在一些基准数据集上达到了最先进的水平。
+<center><img src="/2019/08/31/ConvNets/Conv-A-NIN.png"></center>
+&emsp;&emsp;即便如此，本篇文章的目的，我们将聚焦于标准的卷积层。那已经足够我们去思考了。
+<h3 id="卷积神经网络的成果"><a class="markdownIt-Anchor" href="#卷积神经网络的成果"></a> 卷积神经网络的成果</h3>
+<p>  前面我们顺带提及了使用卷积神经网络近来在计算机视觉产生的突破。我们简单的讨论下一些成果，作为研究卷积神经网络的动机<br>
+  2012年的时候，Alex Krizhevsky, Ilya Sutskever，和Geoff Hinton 将现有的图像分类结果彻底颠覆。<a href="http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf" target="_blank" rel="noopener">(Krizehvsky et al.(2012))</a><br>
+  他们的进步是由于结合了一堆不同部分。他们利用GPU来训练了一个非常大，非常深的神经网络。他们使用了一种名为ReLUs的激活函数和一种叫做DropOut的减少过拟合的技术。他们使用了一个非常大型的且有很多类别的数据集（ImageNet）。当然，他们使用的是卷积神经网络。<br>
+  他们的结构如下所示，是非常深的网络。这个网络有5个卷积层，中间穿插着池化层，和三个全连接层。前面的层被分开到两块GPU上训练。</p>
+<center><img src="/2019/08/31/ConvNets/KSH-arch.png"></center>
+&emsp;&emsp;他们训练的网络一共有1000个类别。
+&emsp;&emsp;随机猜类别的话，一个人一次能猜中的概率为0.1%。Krizhevsky，et al's的模型能够给出63%的正确率。此外，模型给出的top5的正确率为85%。
+<center><img src="/2019/08/31/ConvNets/KSH-results.png"></center>
+<center><i>上面四个是分类正确的样本，下面4个是错误分类的样本。图中的每个例子有一个图片，</i></center><center><i>下面是它的标签，再下面是模型给出的排名前5的推断结果From Krizehvsky et al. (2012).</i></center>
+&emsp;&emsp;甚至一些模型的错误在我看来相当合理。比如上图第二行的左数第一个，真实标签是铁栅，而模型给出的是敞篷汽车，左数第二个，真实标签是蘑菇，而模型推理是伞菌。 
+&emsp;&emsp;我们也可以检查网络的第一层学到了哪些东西。 
+&emsp;&emsp;回想一下，这个卷积层被分开到两块GPU上面。信息没有回传并且每层都是做前向运算，所以分开的两边实际上是断开连接的。也就证明了，每次模型运行的时候两边是各司其职的。
+<center><img src="/2019/08/31/ConvNets/KSH-filters.png"></center>
+<center><i>第一层卷积层学到的卷积核，上面3行是第一块GPU上面的学到的卷积核，</i></center><center><i>面三行是第二块GPU上面学到的卷积核特征</i></center>
+<p>  一边的神经元聚焦于黑色和白色，学习检测不同方向和大小的边缘。另一边的神经元专注于颜色和纹理，检测颜色对比度和图案。记住这些神经元是随机初始化的。没有人设置它们去检测边缘，或者用这样的方式去分开它们。它仅仅是由于训练图像分类网络而产生的。<br>
+  这些卓越的结果只是一个开端。很快，大量的其他工作及测试和修改方法紧随其后并逐渐的提升结果，或把它们应用在其他领域。此外，神经网络社区，和许多计算机视觉社区已经采用了深度卷积神经网络。<br>
+  卷积神经网络在计算机视觉和模式识别领域是一个必不可少的工具。</p>
+<h3 id="公式化卷积神经网络"><a class="markdownIt-Anchor" href="#公式化卷积神经网络"></a> 公式化卷积神经网络</h3>
+<p>  考虑一个输入是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><msub><mi>x</mi><mi>n</mi></msub></mrow></mrow><annotation encoding="application/x-tex">{x_n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">n</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span>输出是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><msub><mi>y</mi><mi>n</mi></msub></mrow></mrow><annotation encoding="application/x-tex">{y_n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">n</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span>的一维卷积层：</p>
+<center><img src="/2019/08/31/ConvNets/Conv-9-Conv2-XY.png"></center>
+<p>  描述输入和输出的关系是相当简单的：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mi>n</mi></msub><mo>=</mo><mi>A</mi><mo>(</mo><msub><mi>x</mi><mi>n</mi></msub><mo separator="true">,</mo><msub><mi>x</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msub><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">y_n=A(x_n,x_{n+1},...)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">n</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">A</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">n</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mclose">)</span></span></span></span></span></p>
+<p>  例如，在上面的公式中：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mn>0</mn></msub><mo>=</mo><mi>A</mi><mo>(</mo><msub><mi>x</mi><mn>0</mn></msub><mo separator="true">,</mo><msub><mi>x</mi><mn>1</mn></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">y_0=A(x_0,x_1)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">A</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span></span></p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mn>1</mn></msub><mo>=</mo><mi>A</mi><mo>(</mo><msub><mi>x</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>x</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">y_1=A(x_1,x_2
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">A</span><span class="mopen">(</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">2</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span></p>
+<p>  同样的，如果我们考虑一个输入是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><msub><mi>x</mi><mrow><mi>n</mi><mo separator="true">,</mo><mi>m</mi></mrow></msub></mrow></mrow><annotation encoding="application/x-tex">{x_{n,m}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mpunct">,</span><span class="mord mathit">m</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span>并且输出是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><msub><mi>y</mi><mrow><mi>n</mi><mo separator="true">,</mo><mi>m</mi></mrow></msub></mrow></mrow><annotation encoding="application/x-tex">{y_{n,m}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mpunct">,</span><span class="mord mathit">m</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span>：</p>
+<center><img src="/2019/08/31/ConvNets/Conv2-5x5-Conv2-XY.png"></center>
+&emsp;&emsp;我们可以再次的写下输出关于输入的表达式：
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mrow><mi>n</mi><mo separator="true">,</mo><mi>m</mi></mrow></msub><mo>=</mo><mi>A</mi><mrow><mo fence="true">(</mo><mtable><mtr><mtd><mrow><msub><mi>x</mi><mrow><mi>n</mi><mo separator="true">,</mo><mi>m</mi></mrow></msub><mo separator="true">,</mo></mrow></mtd><mtd><mrow><msub><mi>x</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn><mo separator="true">,</mo><mi>m</mi></mrow></msub><mo separator="true">,</mo></mrow></mtd><mtd><mrow><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>x</mi><mrow><mi>n</mi><mo separator="true">,</mo><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>x</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn><mo separator="true">,</mo><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo></mrow></mtd></mtr><mtr><mtd><mrow></mrow></mtd><mtd><mrow><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi></mrow></mtd></mtr></mtable><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">y_{n,m}=A\left(
+\begin{matrix}
+    x_{n,m}, &amp; x_{n+1,m}, &amp; ...,\\
+    x_{n,m+1} &amp; x_{n+1,m+1} &amp; ...,\\
+    &amp; ...
+\end{matrix}
+\right)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:2.05002em;"></span><span class="strut bottom" style="height:3.60004em;vertical-align:-1.55002em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mpunct">,</span><span class="mord mathit">m</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">A</span><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:0.9049999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎝</span></span></span><span style="top:-0.89502em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎛</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist"><span style="top:-1.2099999999999997em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mpunct">,</span><span class="mord mathit">m</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span></span></span><span style="top:-0.00999999999999951em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mpunct">,</span><span class="mord mathit">m</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000006em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.2099999999999997em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathit">m</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span></span></span><span style="top:-0.00999999999999951em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">n</span><span class="mbin">+</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathit">m</span><span class="mbin">+</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000006em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-1.2099999999999997em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span></span></span><span style="top:-0.00999999999999951em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:0.9049999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎠</span></span></span><span style="top:-0.89502em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎞</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span></span></span></p>
+<p>  其中：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub><mo>=</mo><mi>A</mi><mrow><mo fence="true">(</mo><mtable><mtr><mtd><mrow><msub><mi>x</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub><mo separator="true">,</mo></mrow></mtd><mtd><mrow><msub><mi>x</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>x</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub><mo separator="true">,</mo></mrow></mtd><mtd><mrow><msub><mi>x</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd></mtr></mtable><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">y_{0,0}=A\left(\begin{matrix}
+            x_{0,0}, &amp;x_{1,0}\\
+            x_{0,1}, &amp;x_{1,1}
+            \end{matrix}
+            \right)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.45em;"></span><span class="strut bottom" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">A</span><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist"><span style="top:-0.6099999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span></span></span><span style="top:0.5900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-0.6099999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:0.5900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="style-wrap reset-textstyle textstyle uncramped" style="top:0em;"><span class="delimsizing size3">)</span></span></span></span></span></span></span></p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub><mo>=</mo><mi>A</mi><mrow><mo fence="true">(</mo><mtable><mtr><mtd><mrow><msub><mi>x</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub><mo separator="true">,</mo></mrow></mtd><mtd><mrow><msub><mi>x</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd></mtr><mtr><mtd><mrow><msub><mi>x</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub><mo separator="true">,</mo></mrow></mtd><mtd><mrow><msub><mi>x</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd></mtr></mtable><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">y_{1,0}=A\left(\begin{matrix}
+            x_{1,0}, &amp;x_{2,0}\\
+            x_{1,1}, &amp;x_{2,1}
+            \end{matrix}
+            \right)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.45em;"></span><span class="strut bottom" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">A</span><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped" style="top:0em;"><span class="delimsizing size3">(</span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist"><span style="top:-0.6099999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span></span></span><span style="top:0.5900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-0.6099999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:0.5900000000000003em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="style-wrap reset-textstyle textstyle uncramped" style="top:0em;"><span class="delimsizing size3">)</span></span></span></span></span></span></span></p>
+<p>如果合并这个方程<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mo>(</mo><mi>x</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">A(x)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">A</span><span class="mopen">(</span><span class="mord mathit">x</span><span class="mclose">)</span></span></span></span>：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>A</mi><mo>(</mo><mi>x</mi><mo>)</mo><mo>=</mo><mi>σ</mi><mo>(</mo><mi>W</mi><mi>x</mi><mo>+</mo><mi>b</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">A(x)=\sigma(Wx+b)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord mathit">A</span><span class="mopen">(</span><span class="mord mathit">x</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03588em;">σ</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.13889em;">W</span><span class="mord mathit">x</span><span class="mbin">+</span><span class="mord mathit">b</span><span class="mclose">)</span></span></span></span></span></p>
+<p>  执行卷积神经网络就拥有了一切，至少理论上是这样的。实际上，这通常不是一个最好的方式去思考卷积神经网络。有一个可代替的公式，关于一个数学操作叫做<em>概率卷积</em>，那可能更有用处。<br>
+  卷积操作是一个强有力的工具。在数学上，概率卷积来自于不同的场景，从偏微分方程到概率论。一部分是因为卷积在偏微分方程(Partial Differential Equation)的作用，卷积在物理学上是非常重要的。它也在许多应用领域起着非常重要的作用，像计算机图形学和信号处理。<br>
+  对于我们来说，卷积提供了很多的益处。首先，我们可以创造出比卷积原生算法更有效的卷积层的执行方式。其次，卷积会从我们公式中省去很多繁杂的部分，统计目前出现的全部<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi><mi>s</mi></mrow><annotation encoding="application/x-tex">xs</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">x</span><span class="mord mathit">s</span></span></span></span>的索引 - 目前的公式可能还没有那么混乱只是因为我们还没有遇到棘手的问题。最后，卷积将给我们一个非同寻常的视角来推理卷积层。</p>
+<blockquote>
+<p>I admire the elegance of your method of computation; it must be nice to ride through these fields upon the horse of true mathematics while the like of us have to make our way laboriously on foot.  — Albert Einstein</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>我羡慕你优美的计算机方法；骑上真正的数学之马穿越这些领域一定是美妙的，然而像我们不得不费力地步行前进。 — 爱因斯坦</p>
+</blockquote>
+<h3 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h3>
+<p>[1] <a href="http://colah.github.io/posts/2014-07-Conv-Nets-Modular/" target="_blank" rel="noopener">http://colah.github.io/posts/2014-07-Conv-Nets-Modular/</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>Big things have small beginnings.</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/WechatPay.jpeg" alt="Ray WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/AliPay.jpeg" alt="Ray Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          
+            <a href="/tags/Paper-Translation/" rel="tag"># Paper Translation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/03/Understanding_Convolutions/" rel="next" title="Understanding Convolutions">
+                <i class="fa fa-chevron-left"></i> Understanding Convolutions
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/10/MixNet/" rel="prev" title="MixConv: Mixed Depthwise Convolutional Kernels">
+                MixConv: Mixed Depthwise Convolutional Kernels <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Ray">
+            
+              <p class="site-author-name" itemprop="name">Ray</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#卷积神经网络-a-modular-perspective"><span class="nav-number">1.</span> <span class="nav-text"> 卷积神经网络: A Modular Perspective</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写在前面"><span class="nav-number">1.1.</span> <span class="nav-text"> 写在前面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#介绍"><span class="nav-number">1.2.</span> <span class="nav-text"> 介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积神经网络的结构"><span class="nav-number">1.3.</span> <span class="nav-text"> 卷积神经网络的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积神经网络的成果"><span class="nav-number">1.4.</span> <span class="nav-text"> 卷积神经网络的成果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#公式化卷积神经网络"><span class="nav-number">1.5.</span> <span class="nav-text"> 公式化卷积神经网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">1.6.</span> <span class="nav-text"> 参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ray</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a></div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('Copied');
+        else $(this).text('Copy failed');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('Copy');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

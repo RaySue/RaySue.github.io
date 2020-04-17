@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet">
+
+
+  
+
+
+
+
+  <meta name="keywords" content="Deep Learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Transposed Convolution, Fractionally Strided Convolution or Deconvolution">
+<meta property="og:url" content="/2017/10/29/2016-10-29-deconv/index.html">
+<meta property="og:site_name" content="SuRui&#39;s Blog">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/8c2b2f6fjw1f9ac3snmk6j21130a7wj5.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/8c2b2f6fjw1f99h94gnlbg20az0aldi4.gif">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/8c2b2f6fjw1f99h9jeg5ig20cd0bf0v5.gif">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/8c2b2f6fjw1f99i1rv4jog206s0770t7.gif">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/8c2b2f6fjw1f99j2k89hlg209k0aq41i.gif">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/8c2b2f6fjw1f9aba7bh2ig20az0chwjq.gif">
+<meta property="og:updated_time" content="2020-04-17T08:33:36.961Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Transposed Convolution, Fractionally Strided Convolution or Deconvolution">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/large/8c2b2f6fjw1f9ac3snmk6j21130a7wj5.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="/2017/10/29/2016-10-29-deconv/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Transposed Convolution, Fractionally Strided Convolution or Deconvolution | SuRui's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SuRui's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">We make our own luck.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/2017/10/29/2016-10-29-deconv/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ray">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuRui's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Transposed Convolution, Fractionally Strided Convolution or Deconvolution
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-10-29 10:00:00" itemprop="dateCreated datePublished" datetime="2017-10-29T10:00:00+08:00">2017-10-29</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-04-17 16:33:36" itemprop="dateModified" datetime="2020-04-17T16:33:36+08:00">2020-04-17</time>
+              </span>
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <center>
+<img src="http://ww3.sinaimg.cn/large/8c2b2f6fjw1f9ac3snmk6j21130a7wj5.jpg">
+</center>
+<a id="more"></a>
+<p>反卷积（Deconvolution）的概念第一次出现是Zeiler在2010年发表的论文<a href="http://www.matthewzeiler.com/pubs/cvpr2010/cvpr2010.pdf" target="_blank" rel="noopener">Deconvolutional networks</a>中，但是并没有指定反卷积这个名字，反卷积这个术语正式的使用是在其之后的工作中(<a href="https://www.cs.nyu.edu/~gwtaylor/publications/zeilertaylorfergus_iccv2011.pdf" target="_blank" rel="noopener">Adaptive deconvolutional networks for mid and high level feature learning</a>)。随着反卷积在神经网络可视化上的成功应用，其被越来越多的工作所采纳比如：场景分割、生成模型等。其中反卷积（Deconvolution）也有很多其他的叫法，比如：Transposed Convolution，Fractional Strided Convolution等等。</p>
+<p>这篇文章的目的主要有两方面：</p>
+<ol>
+<li>解释卷积层和反卷积层之间的关系；</li>
+<li>弄清楚反卷积层输入特征大小和输出特征大小之间的关系。</li>
+</ol>
+<h2 id="卷积层"><a class="markdownIt-Anchor" href="#卷积层"></a> 卷积层</h2>
+<p>卷积层大家应该都很熟悉了,为了方便说明，定义如下：</p>
+<ul>
+<li>二维的离散卷积（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">N = 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mrel">=</span><span class="mord mathrm">2</span></span></span></span>）</li>
+<li>方形的特征输入（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><mi>i</mi><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><mi>i</mi></mrow><annotation encoding="application/x-tex">i\_1 = i\_2 = i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.65952em;"></span><span class="strut bottom" style="height:0.9695199999999999em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord mathit">i</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathit">i</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord mathit">i</span></span></span></span>）</li>
+<li>方形的卷积核尺寸（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><mi>k</mi><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">k\_1 = k\_2 = k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:1.00444em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span>）</li>
+<li>每个维度相同的步长（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><mi>s</mi><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><mi>s</mi></mrow><annotation encoding="application/x-tex">s\_1 = s\_2 = s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.95444em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord mathit">s</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathit">s</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord mathit">s</span></span></span></span>）</li>
+<li>每个维度相同的padding (<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>p</mi><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><mi>p</mi><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">p\_1 = p\_2 = p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.95444em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord mathit">p</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathit">p</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord mathit">p</span></span></span></span>)</li>
+</ul>
+<p>下图表示参数为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>i</mi><mo>=</mo><mn>5</mn><mo separator="true">,</mo><mi>k</mi><mo>=</mo><mn>3</mn><mo separator="true">,</mo><mi>s</mi><mo>=</mo><mn>2</mn><mo separator="true">,</mo><mi>p</mi><mo>=</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(i=5,k=3,s=2,p=1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">5</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathit">p</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span> 的卷积计算过程，从计算结果可以看出输出特征的尺寸为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>o</mi><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><mi>o</mi><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><mi>o</mi><mo>=</mo><mn>3</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(o\_1 = o\_2 = o = 3)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.06em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit">o</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathit">o</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord mathit">o</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mclose">)</span></span></span></span>。</p>
+<center>
+    <img src="http://ww2.sinaimg.cn/large/8c2b2f6fjw1f99h94gnlbg20az0aldi4.gif" width="300">
+</center>
+<p>下图表示参数为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>i</mi><mo>=</mo><mn>6</mn><mo separator="true">,</mo><mi>k</mi><mo>=</mo><mn>3</mn><mo separator="true">,</mo><mi>s</mi><mo>=</mo><mn>2</mn><mo separator="true">,</mo><mi>p</mi><mo>=</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(i=6,k=3,s=2,p=1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">6</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathit">p</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span> 的卷积计算过程，从计算结果可以看出输出特征的尺寸为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>o</mi><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><mi>o</mi><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><mi>o</mi><mo>=</mo><mn>3</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(o\_1 = o\_2 = o = 3)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.06em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit">o</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathit">o</span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord mathit">o</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mclose">)</span></span></span></span>。</p>
+<center>
+    <img src="http://ww4.sinaimg.cn/large/8c2b2f6fjw1f99h9jeg5ig20cd0bf0v5.gif" width="300">
+</center>
+<p>从上述两个例子我们可以总结出卷积层输入特征与输出特征尺寸和卷积核参数的关系为：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>o</mi><mo>=</mo><mrow><mo fence="true">⌊</mo><mfrac><mrow><mi>i</mi><mo>+</mo><mn>2</mn><mi>p</mi><mo>−</mo><mi>k</mi></mrow><mrow><mi>s</mi></mrow></mfrac><mo fence="true">⌋</mo></mrow><mo>+</mo><mn>1</mn><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">o = \left\lfloor \frac{i + 2p - k}{s} \right\rfloor + 1.
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.45em;"></span><span class="strut bottom" style="height:2.40003em;vertical-align:-0.95003em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord mathit">o</span><span class="mrel">=</span><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped" style="top:0em;"><span class="delimsizing size3">⌊</span></span><span class="mord reset-textstyle displaystyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.686em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle cramped"><span class="mord textstyle cramped"><span class="mord mathit">s</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.677em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathit">i</span><span class="mbin">+</span><span class="mord mathrm">2</span><span class="mord mathit">p</span><span class="mbin">−</span><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="style-wrap reset-textstyle textstyle uncramped" style="top:0em;"><span class="delimsizing size3">⌋</span></span></span><span class="mbin">+</span><span class="mord mathrm">1</span><span class="mord mathrm">.</span></span></span></span></span></p>
+<p>其中 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>⌊</mo><mi>x</mi><mo>⌋</mo></mrow><annotation encoding="application/x-tex">\lfloor x \rfloor</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">⌊</span><span class="mord mathit">x</span><span class="mclose">⌋</span></span></span></span> 表示对 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.43056em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">x</span></span></span></span> 向下取整。</p>
+<h2 id="反卷积层"><a class="markdownIt-Anchor" href="#反卷积层"></a> 反卷积层</h2>
+<p>在介绍反卷积之前，我们先来看看卷积运算和矩阵运算之间的关系。</p>
+<h3 id="卷积和矩阵相乘"><a class="markdownIt-Anchor" href="#卷积和矩阵相乘"></a> 卷积和矩阵相乘</h3>
+<p>考虑如下一个简单的卷积层运算，其参数为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>i</mi><mo>=</mo><mn>4</mn><mo separator="true">,</mo><mi>k</mi><mo>=</mo><mn>3</mn><mo separator="true">,</mo><mi>s</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mi>p</mi><mo>=</mo><mn>0</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(i=4,k=3,s=1,p=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">4</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathit">p</span><span class="mrel">=</span><span class="mord mathrm">0</span><span class="mclose">)</span></span></span></span>，输出 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>o</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">o=2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.64444em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">o</span><span class="mrel">=</span><span class="mord mathrm">2</span></span></span></span>。</p>
+<center>
+<img src="http://ww3.sinaimg.cn/large/8c2b2f6fjw1f99i1rv4jog206s0770t7.gif" width="300">
+</center>
+<p>对于上述卷积运算，我们把上图所示的3×3卷积核展成一个如下所示的[4,16]的稀疏矩阵 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="bold">C</mi></mrow></mrow><annotation encoding="application/x-tex">\mathbf{C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68611em;"></span><span class="strut bottom" style="height:0.68611em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathbf">C</span></span></span></span></span>， 其中非0元素 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>w</mi><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub></mrow><annotation encoding="application/x-tex">w_{i,j}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">i</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span> 表示卷积核的第 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi></mrow><annotation encoding="application/x-tex">i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.65952em;"></span><span class="strut bottom" style="height:0.65952em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">i</span></span></span></span> 行和第 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>j</mi></mrow><annotation encoding="application/x-tex">j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.65952em;"></span><span class="strut bottom" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span></span> 列。</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mo fence="true">(</mo><mtable><mtr><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd></mtr><mtr><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>1</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd><mtd><mrow><mn>0</mn></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>1</mn></mrow></msub></mrow></mtd><mtd><mrow><msub><mi>w</mi><mrow><mn>2</mn><mo separator="true">,</mo><mn>2</mn></mrow></msub></mrow></mtd></mtr><mtr><mtd><mrow></mrow></mtd></mtr></mtable><mo fence="true">)</mo></mrow></mrow><annotation encoding="application/x-tex">\begin{pmatrix}
+    w_{0,0} &amp; w_{0,1} &amp; w_{0,2} &amp; 0       &amp; w_{1,0} &amp; w_{1,1} &amp; w_{1,2} &amp; 0       &amp;
+    w_{2,0} &amp; w_{2,1} &amp; w_{2,2} &amp; 0       &amp; 0       &amp; 0       &amp; 0       &amp; 0       \\
+    0       &amp; w_{0,0} &amp; w_{0,1} &amp; w_{0,2} &amp; 0       &amp; w_{1,0} &amp; w_{1,1} &amp; w_{1,2} &amp;
+    0       &amp; w_{2,0} &amp; w_{2,1} &amp; w_{2,2} &amp; 0       &amp; 0       &amp; 0       &amp; 0       \\
+    0       &amp; 0       &amp; 0       &amp; 0       &amp; w_{0,0} &amp; w_{0,1} &amp; w_{0,2} &amp; 0       &amp;
+    w_{1,0} &amp; w_{1,1} &amp; w_{1,2} &amp; 0       &amp; w_{2,0} &amp; w_{2,1} &amp; w_{2,2} &amp; 0       \\
+    0       &amp; 0       &amp; 0       &amp; 0       &amp; 0       &amp; w_{0,0} &amp; w_{0,1} &amp; w_{0,2} &amp;
+    0       &amp; w_{1,0} &amp; w_{1,1} &amp; w_{1,2} &amp; 0       &amp; w_{2,0} &amp; w_{2,1} &amp; w_{2,2} \\
+\end{pmatrix}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:3.2500400000000003em;"></span><span class="strut bottom" style="height:6.0000800000000005em;vertical-align:-2.75004em;"></span><span class="base displaystyle textstyle uncramped"><span class="minner displaystyle textstyle uncramped"><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:2.1050199999999997em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎝</span></span></span><span style="top:0.9500099999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:0.3499999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-0.25001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-0.8500199999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎜</span></span></span><span style="top:-2.09504em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎛</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:2.3900000000000006em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist"><span style="top:-2.41em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-1.2100000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:-0.009999999999999953em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord mathrm">0</span></span></span><span style="top:1.1900000000000002em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.02691em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span><span class="style-wrap reset-textstyle textstyle uncramped"><span class="delimsizing mult"><span class="vlist"><span style="top:2.1050199999999997em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎠</span></span></span><span style="top:0.9500099999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:0.3499999999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-0.25001em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-0.8500199999999999em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎟</span></span></span><span style="top:-2.09504em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="delimsizinginner delim-size4"><span>⎞</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span></span></span></p>
+<p>我们再把4×4的输入特征展成[16,1]的矩阵 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="bold">X</mi></mrow></mrow><annotation encoding="application/x-tex">\mathbf{X}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68611em;"></span><span class="strut bottom" style="height:0.68611em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathbf">X</span></span></span></span></span>，那么 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="bold">Y</mi><mo>=</mo><mi mathvariant="bold">C</mi><mi mathvariant="bold">X</mi></mrow></mrow><annotation encoding="application/x-tex">\mathbf{Y = CX}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68611em;"></span><span class="strut bottom" style="height:0.68611em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathbf" style="margin-right:0.02875em;">Y</span><span class="mrel">=</span><span class="mord mathbf">C</span><span class="mord mathbf">X</span></span></span></span></span> 则是一个[4,1]的输出特征矩阵，把它重新排列2×2的输出特征就得到最终的结果，从上述分析可以看出卷积层的计算其实是可以转化成矩阵相乘的。值得注意的是，在一些深度学习网络的开源框架中并不是通过这种这个转换方法来计算卷积的，因为这个转换会存在很多无用的0乘操作，Caffe中具体实现卷积计算的方法可参考<a href="http://buptldy.github.io/2016/10/01/2016-10-01-im2col/" target="_blank" rel="noopener">Implementing convolution as a matrix multiplication</a>。</p>
+<p>通过上述的分析，我们已经知道卷积层的前向操作可以表示为和矩阵<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="bold">C</mi></mrow></mrow><annotation encoding="application/x-tex">\mathbf{C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68611em;"></span><span class="strut bottom" style="height:0.68611em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathbf">C</span></span></span></span></span>相乘，那么 <strong>我们很容易得到卷积层的反向传播就是和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="bold">C</mi></mrow></mrow><annotation encoding="application/x-tex">\mathbf{C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68611em;"></span><span class="strut bottom" style="height:0.68611em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathbf">C</span></span></span></span></span>的转置相乘</strong>。</p>
+<h3 id="反卷积和卷积的关系"><a class="markdownIt-Anchor" href="#反卷积和卷积的关系"></a> 反卷积和卷积的关系</h3>
+<p>全面我们已经说过反卷积又被称为Transposed(转置) Convolution，我们可以看出其实卷积层的前向传播过程就是反卷积层的反向传播过程，卷积层的反向传播过程就是反卷积层的前向传播过程。因为卷积层的前向反向计算分别为乘 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mi mathvariant="bold">C</mi></mrow></mrow><annotation encoding="application/x-tex">\mathbf{C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68611em;"></span><span class="strut bottom" style="height:0.68611em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord mathbf">C</span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><msup><mi mathvariant="bold">C</mi><mi mathvariant="bold">T</mi></msup></mrow></mrow><annotation encoding="application/x-tex">\mathbf{C^T}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8432769999999999em;"></span><span class="strut bottom" style="height:0.8432769999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathbf">C</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathbf">T</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span>,而反卷积层的前向反向计算分别为乘 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><msup><mi mathvariant="bold">C</mi><mi mathvariant="bold">T</mi></msup></mrow></mrow><annotation encoding="application/x-tex">\mathbf{C^T}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8432769999999999em;"></span><span class="strut bottom" style="height:0.8432769999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathbf">C</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathbf">T</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mrow><mo>(</mo><msup><mi mathvariant="bold">C</mi><mi mathvariant="bold">T</mi></msup><msup><mo>)</mo><mi mathvariant="bold">T</mi></msup></mrow></mrow><annotation encoding="application/x-tex">\mathbf{(C^T)^T}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8432769999999999em;"></span><span class="strut bottom" style="height:1.093277em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord textstyle uncramped"><span class="mopen">(</span><span class="mord"><span class="mord mathbf">C</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathbf">T</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose"><span class="mclose">)</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord mathbf">T</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span></span> ，所以它们的前向传播和反向传播刚好交换过来。</p>
+<p>下图表示一个和上图卷积计算对应的反卷积操作，其中他们的输入输出关系正好相反。如果不考虑通道以卷积运算的反向运算来计算反卷积运算的话，我们还可以通过离散卷积的方法来求反卷积（这里只是为了说明，实际工作中不会这么做）。</p>
+<p>同样为了说明，定义反卷积操作参数如下：</p>
+<ul>
+<li>二维的离散卷积（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>N</mi><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">N = 2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="mrel">=</span><span class="mord mathrm">2</span></span></span></span>）</li>
+<li>方形的特征输入（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>i</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><msup><mi>i</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><msup><mi>i</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow><annotation encoding="application/x-tex">i&#x27;\_1 = i&#x27;\_2 = i&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:1.061892em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">i</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">i</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">i</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>）</li>
+<li>方形的卷积核尺寸（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>k</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><msup><mi>k</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><msup><mi>k</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow><annotation encoding="application/x-tex">k&#x27;\_1 = k&#x27;\_2 = k&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:1.061892em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>）</li>
+<li>每个维度相同的步长（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow><annotation encoding="application/x-tex">s&#x27;\_1 = s&#x27;\_2 = s&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:1.061892em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>）</li>
+<li>每个维度相同的padding (<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>p</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>1</mn><mo>=</mo><msup><mi>p</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mi mathvariant="normal">_</mi><mn>2</mn><mo>=</mo><msup><mi>p</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow><annotation encoding="application/x-tex">p&#x27;\_1 = p&#x27;\_2 = p&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:1.061892em;vertical-align:-0.31em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm" style="margin-right:0.02778em;">_</span><span class="mord mathrm">2</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>)</li>
+</ul>
+<p>下图表示的是参数为( <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>i</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mn>2</mn><mo separator="true">,</mo><msup><mi>k</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mn>3</mn><mo separator="true">,</mo><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mn>1</mn><mo separator="true">,</mo><msup><mi>p</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">i&#x27;=2,k&#x27;=3,s&#x27;=1,p&#x27;=2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:0.946332em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">i</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">2</span></span></span></span>)的反卷积操作，其对应的卷积操作参数为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>i</mi><mo>=</mo><mn>4</mn><mo separator="true">,</mo><mi>k</mi><mo>=</mo><mn>3</mn><mo separator="true">,</mo><mi>s</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mi>p</mi><mo>=</mo><mn>0</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(i=4,k=3,s=1,p=0)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">4</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathit">p</span><span class="mrel">=</span><span class="mord mathrm">0</span><span class="mclose">)</span></span></span></span>。我们可以发现对应的卷积和非卷积操作其 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>k</mi><mo>=</mo><msup><mi>k</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo separator="true">,</mo><mi>s</mi><mo>=</mo><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>)</mo></mrow><annotation encoding="application/x-tex">(k=k&#x27;,s=s&#x27;)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:1.001892em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mrel">=</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span>，但是反卷积却多了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>p</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p&#x27;=2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:0.946332em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">2</span></span></span></span>。通过对比我们可以发现卷积层中左上角的输入只对左上角的输出有贡献，所以反卷积层会出现 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>p</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mi>k</mi><mo>−</mo><mi>p</mi><mo>−</mo><mn>1</mn><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">p&#x27;=k-p-1=2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:0.946332em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">−</span><span class="mord mathit">p</span><span class="mbin">−</span><span class="mord mathrm">1</span><span class="mrel">=</span><span class="mord mathrm">2</span></span></span></span>。通过示意图，我们可以发现，反卷积层的输入输出在 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mo>=</mo><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s=s&#x27;=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:0.751892em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">1</span></span></span></span> 的情况下关系为：</p>
+o'=i'-k’+2p’+1=i’+(k-1)-2p
+
+<center>
+<img src="http://ww4.sinaimg.cn/large/8c2b2f6fjw1f99j2k89hlg209k0aq41i.gif" width="300">
+</center>
+<h3 id="fractionally-strided-convolution"><a class="markdownIt-Anchor" href="#fractionally-strided-convolution"></a> Fractionally Strided Convolution</h3>
+<p>上面也提到过反卷积有时候也被叫做Fractionally Strided Convolution，翻译过来大概意思就是小数步长的卷积。对于步长 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s&gt;1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.68354em;vertical-align:-0.0391em;"></span><span class="base textstyle uncramped"><span class="mord mathit">s</span><span class="mrel">&gt;</span><span class="mord mathrm">1</span></span></span></span>的卷积，我们可能会想到其对应的反卷积步长 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup><mo>&lt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s&#x27;&lt;1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:0.790992em;vertical-align:-0.0391em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">&lt;</span><span class="mord mathrm">1</span></span></span></span>。 如下图所示为一个参数为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>i</mi><mo>=</mo><mn>5</mn><mo separator="true">,</mo><mi>k</mi><mo>=</mo><mn>3</mn><mo separator="true">,</mo><mi>s</mi><mo>=</mo><mn>2</mn><mo separator="true">,</mo><mi>p</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">i = 5, k = 3, s = 2 , p = 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">5</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mrel">=</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mrel">=</span><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathit">p</span><span class="mrel">=</span><span class="mord mathrm">1</span></span></span></span>的卷积操作(就是第一张图所演示的)所对应的反卷积操作。对于反卷积操作的小数步长我们可以理解为：在其输入特征单元之间插入 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">s-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit">s</span><span class="mbin">−</span><span class="mord mathrm">1</span></span></span></span> 个0，插入0后把其看出是新的特征输入，然后此时步长 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>s</mi><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow><annotation encoding="application/x-tex">s&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.751892em;"></span><span class="strut bottom" style="height:0.751892em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span> 不再是小数而是为1。因此，结合上面所得到的结论，我们可以得出Fractionally Strided Convolution的输入输出关系为：</p>
+o' = s(i' −1)+k −2p
+
+<center>
+<img src="http://ww1.sinaimg.cn/large/8c2b2f6fjw1f9aba7bh2ig20az0chwjq.gif" width="300">
+</center>
+<h2 id="参考"><a class="markdownIt-Anchor" href="#参考"></a> 参考</h2>
+<p><a href="https://github.com/vdumoulin/conv_arithmetic" target="_blank" rel="noopener">conv_arithmetic</a></p>
+<p><a href="https://arxiv.org/abs/1609.07009" target="_blank" rel="noopener">Is the deconvolution layer the same as a convolutional layer?</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>Big things have small beginnings.</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/WechatPay.jpeg" alt="Ray WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/AliPay.jpeg" alt="Ray Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/27/hello-world/" rel="prev" title="Hexo">
+                Hexo <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Ray">
+            
+              <p class="site-author-name" itemprop="name">Ray</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#卷积层"><span class="nav-number">1.</span> <span class="nav-text"> 卷积层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反卷积层"><span class="nav-number">2.</span> <span class="nav-text"> 反卷积层</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#卷积和矩阵相乘"><span class="nav-number">2.1.</span> <span class="nav-text"> 卷积和矩阵相乘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反卷积和卷积的关系"><span class="nav-number">2.2.</span> <span class="nav-text"> 反卷积和卷积的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fractionally-strided-convolution"><span class="nav-number">2.3.</span> <span class="nav-text"> Fractionally Strided Convolution</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text"> 参考</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ray</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a></div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('Copied');
+        else $(this).text('Copy failed');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('Copy');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

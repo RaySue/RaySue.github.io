@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet">
+
+
+  
+
+
+
+
+  <meta name="description" content="GhostNet：More Features from Cheap Operations Code：https://github.com/huawei-noah/ghostnet">
+<meta name="keywords" content="Deep Learning,CVPR 2020,Paper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GhostNet：More Features from Cheap Operations">
+<meta property="og:url" content="/2020/04/03/GhostNet/index.html">
+<meta property="og:site_name" content="SuRui&#39;s Blog">
+<meta property="og:description" content="GhostNet：More Features from Cheap Operations Code：https://github.com/huawei-noah/ghostnet">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="/2020/04/03/GhostNet/1.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/2.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/3.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/4.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/5.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/6.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/7.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/8.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/9.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/10.jpg">
+<meta property="og:image" content="/2020/04/03/GhostNet/11.jpg">
+<meta property="og:updated_time" content="2020-04-03T06:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GhostNet：More Features from Cheap Operations">
+<meta name="twitter:description" content="GhostNet：More Features from Cheap Operations Code：https://github.com/huawei-noah/ghostnet">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="/2020/04/03/GhostNet/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>GhostNet：More Features from Cheap Operations | SuRui's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SuRui's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">We make our own luck.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/2020/04/03/GhostNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ray">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuRui's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">GhostNet：More Features from Cheap Operations
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-03 13:18:00 / Modified: 14:00:00" itemprop="dateCreated datePublished" datetime="2020-04-03T13:18:00+08:00">2020-04-03</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>GhostNet：More Features from Cheap Operations</p>
+<p>Code：<a href="https://github.com/huawei-noah/ghostnet" target="_blank" rel="noopener">https://github.com/huawei-noah/ghostnet</a></p>
+<a id="more"></a>
+<blockquote>
+<p>  发现一个点并解决就是一篇CVPR，该文章主要发现了优秀的网络的特点是feature map提取过程中的冗余性，这种冗余性体现在很多成对的feature map间很像，就好像彼此的“ghost”，而这种特征冗余性对于理解图像来说还是必要的，所以文章把feature map分为两种，一种是本质特征，一种是“ghost”，其中“ghost”可以通过低廉的线性运算来完成，先通过普通的卷积提取本质特征，再通过线性变换对特征进行增强，这样大大减少了参数和运算量。感觉上是对原始的卷积特征一部分保留，一部分用深度可分离卷积代替。Ghost module是一个即插即用的模块，可以用来替换分类网络的卷积层从而获得更高的精度。d是ghost模块的卷积核尺寸，s是ghost模块通过卷积对同一个本质特征映射图产生ghost特征映射图的数目。通过MSE来对比特征映射图之间的差异能够发现特征图间的相关性。</p>
+</blockquote>
+<h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要</h2>
+<p>  在嵌入式设备上部署卷积神经网络（CNNs）是比较难的，因为设备的内存和算力资源很有限。对于那些成功的CNNs一般层数角度，一个特点就是feature map是冗余的，但是这种情况很少在网络设计上被察觉。本文提出了一个新颖的Ghost模块通过低廉运算的操作就能够得到更多的feature maps。基于固有的feature map集合，我们使用一系列的低廉运算的线性变换来产生许多ghost feature map能够彻底的揭示潜在固有特征的信息。我们提出的Ghost 模块可以作为一个即插即用的模块来提高已有的神经网络。通过堆叠Ghost 模块得到Ghost bottleneck，然后就很容易的得到了一个轻量级的GhostNet。在基准上实验的结果证明了我们提出的Ghost模块是一个令人印象深刻的替换baseline卷积层的方式，并且我们的GhostNet在ImageNet ILSVRC-2012分类数据集上，比MobileNetv3有更高的识别准确率（75.7%的top 1准确率）而且需要更少的计算量。</p>
+<center><img src="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70" width="66%"></center>
+&emsp;&emsp;图1：通过ResNet-50的第一组残差块产生的特征映射图可视化结果，其中相似的三对特征图通过相同的颜色标注了。成对的特征映射图可以对其中一个经过低廉的运算转换（图中的扳手表示）来相似的包含另一个的特征。
+<h2 id="介绍"><a class="markdownIt-Anchor" href="#介绍"></a> 介绍</h2>
+<p>  随着这些年移动端的AI应用越来越多，对于模型轻量化的方法研究也随之增多，比如：模型裁剪（model pruning）、低秩量化(low-bit quantization)、知识蒸馏(knowledge-distillation)等。</p>
+<p>  此外，利用更少的参数和计算量来设计高效的结构也是非常有潜力能设计出高效的神经网络的，这种做法在这段时间也取得了相当大的成功。而且可以为搜索框架提供新的搜索结构单元。比如MobileNet利用深度可分离卷积核逐点卷积构建的单元在更大的卷积核来近似原始的卷积层，并达到了相当的效果。ShuffleNet进一步提取了channel的洗牌操作来增强轻量级模型的表现。</p>
+<p>  <u><strong>对于一个训练的很好的深度神经网络模型来说，一个重要的特征是冗余的特征，丰富的甚至冗余的特征是对输入数据有综合理解的保证，如图1所示输入数据用ResNet-50提取的特征来看，存在许多相似的特征对，他们就好像彼此的ghost。</strong></u>与其避开这些特征，莫不如通过一个高效的方式来利用它们。</p>
+<p>  论文提出的Ghost模块能够通过更少的参数量来产生更多的特征。具体的做法是，**网络中的一个普通的卷积层将会被分成两部分。第一部分包含普通的卷积但是它们的总数将会被严格控制。假设内在的特征映射图来自第一部分，一系列的简单线性操作会用于产生更多的特征映射图。**不需要改变输出的特征映射图的尺寸，而整体的参数和计算复杂度在Ghost模块中都被减少了。</p>
+<h2 id="相关工作"><a class="markdownIt-Anchor" href="#相关工作"></a> 相关工作</h2>
+<p>  <strong>调研模型压缩</strong> ，连接裁剪是对模型不重要的连接进行裁剪。Channel裁剪进一步的移除没用的channel。模型量化是使用离散的值来近似表示原始的参数，从而达到存储变小和加速计算的目的。典型的二值方法只用1比特的值来存储网络的权重。张量分解，通过挖掘冗余特征和对权重低秩描述来降低参数和加速计算。知识蒸馏，利用更大的模型来引导小模型学习，提高了小模型的表现，这种方法都依赖于预训练模型。在基础操作和模型结构上的改进可能会更好。</p>
+<p>  <strong>调研压缩模型的设计</strong> ，为了满足在嵌入式设备上部署神经网络的需求。一系列压缩模型层出不穷。Xception、MobileNet全系、shuffleNet系列、EfficientNet、MixNet等等。Xception利用深度卷积操作来高效利用了模型参数。MobileNet使用了深度可分离卷积，MobileNetv2使用了逆残差块，MobileNetv3进一步利用了AutoML技术达到了更好的效果。ShuffleNet介绍了channel混洗操作来在不用组的channel间提高信息流交换。ShuffleNetV2进一步考虑了实际的目标硬件的速度来进行模型压缩设计。<strong>尽管这些模型能够在很少的计算量下有很好的表现，但是特征映射图之间的相关性从来没有被深挖</strong>。</p>
+<h2 id="ghostnet设计"><a class="markdownIt-Anchor" href="#ghostnet设计"></a> GhostNet设计</h2>
+<p>  Ghost模块利用原始卷积层在几个小的卷积核产生的特征上获得更多的特征映射图，然后通过Ghost模块开发一个具有高性能和高表现的网络-GhostNet。</p>
+<h3 id="利用ghost模块提取更多特征"><a class="markdownIt-Anchor" href="#利用ghost模块提取更多特征"></a> 利用Ghost模块提取更多特征</h3>
+<p>  尽管目前很多的轻量级网络诸如MobileNet和shuffleNet能够利用深度卷积和混洗操作使用小卷积核来构建高效的卷积神经网络，但余下的1x1的卷积层仍旧占据了相当大的内存和FLOPs。</p>
+<p>  Ghost模块通过线性变换模块来代替部分通过卷积提取的特征，来减少参数量和运算量，假定输入数据为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi><mo>∈</mo><msup><mi>R</mi><mrow><mi>c</mi><mo>×</mo><mi>h</mi><mo>×</mo><mi>w</mi></mrow></msup></mrow><annotation encoding="application/x-tex">X \in R^{c \times h \times w}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:0.888208em;vertical-align:-0.0391em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.07847em;">X</span><span class="mrel">∈</span><span class="mord"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">c</span><span class="mbin">×</span><span class="mord mathit">h</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.02691em;">w</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>，其中c是输入的channel数，h和w是输入数据的高和宽，相应地任何产生n个特征映射图的卷积层操作都可以用如下公式来表示：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><mo>=</mo><mi>X</mi><mo>∗</mo><mi>f</mi><mo>+</mo><mi>b</mi><mtext> </mtext><mtext> </mtext><mtext> </mtext><mtext> </mtext><mo>(</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">Y = X * f + b \space\space\space\space (1)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord mathit" style="margin-right:0.22222em;">Y</span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.07847em;">X</span><span class="mbin">∗</span><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mbin">+</span><span class="mord mathit">b</span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mopen">(</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span></span></p>
+<p>其中*代表的是卷积操作，b表示偏置项，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><mo>∈</mo><msup><mi>R</mi><mrow><msup><mi>h</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mo>×</mo><msup><mi>w</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mo>×</mo><mi>n</mi></mrow></msup></mrow><annotation encoding="application/x-tex">Y \in R^{h^{&#x27;} \times w^{&#x27;} \times n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:1.07638em;"></span><span class="strut bottom" style="height:1.1154799999999998em;vertical-align:-0.0391em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.22222em;">Y</span><span class="mrel">∈</span><span class="mord"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span class="mord mathit">h</span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.1em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptscriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">×</span><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.1em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptscriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">×</span><span class="mord mathit">n</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>表示n个channel的输出特征映射图，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><mo>∈</mo><msup><mi>R</mi><mrow><mi>c</mi><mo>×</mo><mi>k</mi><mo>×</mo><mi>k</mi><mo>×</mo><mi>n</mi></mrow></msup></mrow><annotation encoding="application/x-tex">f \in R^{c \times k \times k \times n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.043548em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mrel">∈</span><span class="mord"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">c</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">×</span><span class="mord mathit">n</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>表示卷积核。此外<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>h</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup></mrow><annotation encoding="application/x-tex">h^{&#x27;}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.89488em;"></span><span class="strut bottom" style="height:0.89488em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">h</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>w</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup></mrow><annotation encoding="application/x-tex">w^{&#x27;}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.89488em;"></span><span class="strut bottom" style="height:0.89488em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>表示输出数据的高和宽，k表示卷积核的尺寸。在执行卷积运算的FLOPs的运算可以被计算为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>×</mo><msup><mi>h</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mo>×</mo><msup><mi>w</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mo>×</mo><mi>c</mi><mo>×</mo><mi>k</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">n \times h^{&#x27;} \times w^{&#x27;} \times c \times k \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.89488em;"></span><span class="strut bottom" style="height:0.97821em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span><span class="mbin">×</span><span class="mord"><span class="mord mathit">h</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">×</span><span class="mord"><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">×</span><span class="mord mathit">c</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span>，运算量动辄成千上万，因为其中n和c的占比是很大的，因为一般channel数都会设置为（256或512）。</p>
+<center><img src="/2020/04/03/GhostNet/1.jpg" width="66%"></center>
+<p>  图2阐释了卷积层和Ghost模块对于相同channel数的输出特征图。其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">Φ</mi></mrow><annotation encoding="application/x-tex">\Phi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathrm">Φ</span></span></span></span>代表低廉的运算。</p>
+<p>  我们指出的冗余特征其实不必利用有大量FLOPs和参数的卷积运算来完成。假设输出的特征映射图是本质特征图通过低廉的变换得到的“ghosts”，而这些本质特征是通过普通的小卷积核得到的特征：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>Y</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mo>=</mo><mi>X</mi><mo>∗</mo><msup><mi>f</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mtext> </mtext><mtext> </mtext><mtext> </mtext><mtext> </mtext><mo>(</mo><mn>2</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">Y^{&#x27;} = X * f^{&#x27;} \space\space\space\space (2)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.9448799999999999em;"></span><span class="strut bottom" style="height:1.19488em;vertical-align:-0.25em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.22222em;">Y</span><span class="vlist"><span style="top:-0.413em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit" style="margin-right:0.07847em;">X</span><span class="mbin">∗</span><span class="mord"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="vlist"><span style="top:-0.413em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mopen">(</span><span class="mord mathrm">2</span><span class="mclose">)</span></span></span></span></span></p>
+<p>  其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>f</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msup><mo>∈</mo><msup><mi>R</mi><mrow><mi>c</mi><mo>×</mo><mi>k</mi><mo>×</mo><mi>k</mi><mo>×</mo><mi>m</mi></mrow></msup></mrow><annotation encoding="application/x-tex">f^{&#x27;} \in R^{c \times k \times k \times m}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.89488em;"></span><span class="strut bottom" style="height:1.08932em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">∈</span><span class="mord"><span class="mord mathit" style="margin-right:0.00773em;">R</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">c</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">×</span><span class="mord mathit">m</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>是使用的卷积核，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mo>≤</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">m \le n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.63597em;"></span><span class="strut bottom" style="height:0.7719400000000001em;vertical-align:-0.13597em;"></span><span class="base textstyle uncramped"><span class="mord mathit">m</span><span class="mrel">≤</span><span class="mord mathit">n</span></span></span></span>并且为了简化，偏置项b被省略了。超参数就只有和卷积相关的<em>卷积核大小</em>，<em>步长</em>，<em>padding</em>，这些和公式1中的普通卷积是一样的，所以输出的特征映射图的高和宽和前面都是一致的。为了能够和普通卷积一样输出n个channel的特征映射图，我们对每个本质特征采取了一系列的低廉运算（卷积），也就是一个特征映射图得到s个ghost特征图，根据下面的公式：</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><msub><mi mathvariant="normal">Φ</mi><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow></msub><mo>(</mo><msubsup><mi>y</mi><mi>i</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msubsup><mo>)</mo><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><mi mathvariant="normal">∀</mi><mtext> </mtext><mi>i</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>m</mi><mo separator="true">,</mo><mtext> </mtext><mtext> </mtext><mi>j</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>s</mi><mtext> </mtext><mtext> </mtext><mtext> </mtext><mtext> </mtext><mo>(</mo><mn>3</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">y_{ij} = \Phi_{i,j}(y_i^{&#x27;}), \space\space \forall \space i=1,...,m,\space\ j=1,...,s \space\space\space\space(3)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.9448799999999999em;"></span><span class="strut bottom" style="height:1.230988em;vertical-align:-0.286108em;"></span><span class="base displaystyle textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">i</span><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord"><span class="mord mathrm">Φ</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">i</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.247em;margin-left:-0.03588em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.4129999999999999em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span><span class="mpunct">,</span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mathrm">∀</span><span class="mord mspace"> </span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span><span class="mord mathit">m</span><span class="mpunct">,</span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mathit" style="margin-right:0.05724em;">j</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span><span class="mord mathit">s</span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mord mspace"> </span><span class="mopen">(</span><span class="mord mathrm">3</span><span class="mclose">)</span></span></span></span></span></p>
+<p>  一个<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>y</mi><mi>i</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msubsup></mrow><annotation encoding="application/x-tex">y_i^{&#x27;}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.89488em;"></span><span class="strut bottom" style="height:1.1535440000000001em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.258664em;margin-left:-0.03588em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>可能有一个或多个ghost特征图<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>{</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msubsup><mo>}</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mrow><mi>s</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">\{y_{ij}\}^{s}_{j=1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.1447720000000001em;vertical-align:-0.394772em;"></span><span class="base textstyle uncramped"><span class="mopen">{</span><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">i</span><span class="mord mathit" style="margin-right:0.05724em;">j</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose"><span class="mclose">}</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.05724em;">j</span><span class="mrel">=</span><span class="mord mathrm">1</span></span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">s</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>，每个本质特征映射图<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>y</mi><mi>i</mi><mrow><msup><mrow></mrow><mrow><mi mathvariant="normal">′</mi></mrow></msup></mrow></msubsup></mrow><annotation encoding="application/x-tex">y_i^{&#x27;}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.89488em;"></span><span class="strut bottom" style="height:1.1535440000000001em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.258664em;margin-left:-0.03588em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord"><span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle uncramped"><span class="mord scriptscriptstyle uncramped"><span class="mord mathrm">′</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>都需要通过卷积运算生成s-1个新的ghost特征，因为最后输出的结果中也保留（同一性映射）一个本质特征映射图。根据公式3，我们可以得到<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>=</mo><mi>m</mi><mo>×</mo><mi>s</mi></mrow><annotation encoding="application/x-tex">n=m \times s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.58333em;"></span><span class="strut bottom" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit">n</span><span class="mrel">=</span><span class="mord mathit">m</span><span class="mbin">×</span><span class="mord mathit">s</span></span></span></span>个特征映射图，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><mo>=</mo><mo>[</mo><msub><mi>y</mi><mrow><mn>1</mn><mn>1</mn></mrow></msub><mo separator="true">,</mo><msub><mi>y</mi><mrow><mn>1</mn><mn>2</mn></mrow></msub><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>y</mi><mrow><mi>m</mi><mi>s</mi></mrow><mo>]</mo></mrow><annotation encoding="application/x-tex">Y = [y_{11}, y_{12}, ..., y{ms}]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.22222em;">Y</span><span class="mrel">=</span><span class="mopen">[</span><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.03588em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">1</span><span class="mord mathrm">2</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mord textstyle uncramped"><span class="mord mathit">m</span><span class="mord mathit">s</span></span><span class="mclose">]</span></span></span></span>是Ghost模块的返回结果，如图2b所示。<strong>值得注意的是线性操作<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi mathvariant="normal">Φ</mi></mrow><annotation encoding="application/x-tex">\Phi</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.68333em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathrm">Φ</span></span></span></span>是在每个channel单独做的，所以参数量和计算量都远小于普通卷积</strong>。实际上我们在ghost模块中使用的线性操作可能是3x3和5x5的线性核。</p>
+<p>  之前的轻量网络中使用深度可分离卷积来处理<strong>空间信息</strong>，然后使用点卷积来处理channel间的特征交叉信息。相反，<strong>Ghost模块采用普通的卷积先来生成几个本质的特征映射图，然后在利用低廉运算操作来对特征进行增强，从而增加channel数</strong>。之前的高效网络结构在处理每个特征映射图的时候受限于深度卷积核转换操作，而Ghost模块的线性操作有很大的多样性。此外，Ghost模块也保留了m个本质特征图。</p>
+<h3 id="ghost模块的复杂度分析"><a class="markdownIt-Anchor" href="#ghost模块的复杂度分析"></a> Ghost模块的复杂度分析</h3>
+<p>  <strong>复杂度分析</strong> Ghost模块很容易替换掉现有的网络结构中的普通卷积，我们现在来分析一下Ghost模块的理论内存占用和加速比例。例如：一个同一性变换和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mo>×</mo><mo>(</mo><mi>s</mi><mo>−</mo><mn>1</mn><mo>)</mo><mo>=</mo><mfrac><mrow><mi>n</mi></mrow><mrow><mi>s</mi></mrow></mfrac><mo>×</mo><mo>(</mo><mi>s</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">m \times (s - 1)=\frac{n}{s} \times (s - 1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.095em;vertical-align:-0.345em;"></span><span class="base textstyle uncramped"><span class="mord mathit">m</span><span class="mbin">×</span><span class="mopen">(</span><span class="mord mathit">s</span><span class="mbin">−</span><span class="mord mathrm">1</span><span class="mclose">)</span><span class="mrel">=</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.345em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">s</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.394em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">n</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mbin">×</span><span class="mopen">(</span><span class="mord mathit">s</span><span class="mbin">−</span><span class="mord mathrm">1</span><span class="mclose">)</span></span></span></span>是我们要用低廉的线性变换所产生的特征图的个数。考虑到CPU和GPU卡的利用，我们建议在一个Ghost模块中的线性操作使用相同的卷积核尺寸（3x3或5x5）来执行。理论上使用Ghost模块替换掉普通卷积的加速比为：</p>
+<center><img src="/2020/04/03/GhostNet/2.jpg" width="56%"></center>
+<p>其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d \times d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit">d</span><span class="mbin">×</span><span class="mord mathit">d</span></span></span></span>和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi><mo>×</mo><mi>k</mi></mrow><annotation encoding="application/x-tex">k \times k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mbin">×</span><span class="mord mathit" style="margin-right:0.03148em;">k</span></span></span></span>有相同的量级， 而且s远小于c。类似地，模型的压缩比计算如下：</p>
+<center><img src="/2020/04/03/GhostNet/3.jpg" width="56%"></center>
+<p>  s越大，肯定参数越少，而且计算速度越快，但是s越大，ghost特征占比越多，而本质特征占比就变少了，模型表达效果肯定不理想，所以这里需要一个balance。</p>
+<p>  由Ghost模块来组成的Ghost bottleneck的示意图如下：</p>
+<center><img src="/2020/04/03/GhostNet/4.jpg" width="56%"></center>
+<p>  Ghost bottleneck和基础的ResNet模型是很像的，也是几个卷积层加shortcut连接的组合，Ghost bottleneck主要由两部分组成，第一部分用于对通道进行扩张，第二部分对通道进行压缩使其能够和shortcut相连接。每层间都使用BN和RuLU，除了第二个Ghost模块，因为MobileNetv2论证了ReLU在低维的损失较为严重的问题。</p>
+<center><img src="/2020/04/03/GhostNet/5.jpg" width="56%"></center>
+<h2 id="ghost-module-的有效性"><a class="markdownIt-Anchor" href="#ghost-module-的有效性"></a> Ghost Module 的有效性</h2>
+<h3 id="超参数实验对比"><a class="markdownIt-Anchor" href="#超参数实验对比"></a> 超参数实验对比</h3>
+<h4 id="cifar-10上测试卷积核size"><a class="markdownIt-Anchor" href="#cifar-10上测试卷积核size"></a> CIFAR-10上测试卷积核size</h4>
+<p>  以VGG16位基础结构，加持Ghost模块，固定s=2，然后调节d在集合{1, 3, 5, 7}，d=3最好。</p>
+<center><img src="/2020/04/03/GhostNet/6.jpg" width="56%"></center>
+<h4 id="cifar-10上测试不同的s每个本质特征变换出s个ghost特征"><a class="markdownIt-Anchor" href="#cifar-10上测试不同的s每个本质特征变换出s个ghost特征"></a> CIFAR-10上测试不同的s（每个本质特征变换出s个ghost特征）</h4>
+<p>  固定d=3，然后调节d在集合{2, 3, 4, 5}，s=2最好。</p>
+<center><img src="/2020/04/03/GhostNet/7.jpg" width="56%"></center>
+<h3 id="特征图的可视化"><a class="markdownIt-Anchor" href="#特征图的可视化"></a> 特征图的可视化</h3>
+<p>  我们也对使用ghost模块的网络机械能了特征图可视化如下图所示。尽管生成的特征映射图是来自于原始的特征映射图，它们的确有显著的不同，也就意味着生成的特征是灵活的能满足于具体任务的需求的。</p>
+<center><img src="/2020/04/03/GhostNet/8.jpg" width="56%"></center>
+图4是Ghost-VGG-16产生的特征映射图，左边是本质特征，右边是生成的ghost特征。图5是原生的VGG-16得到的特征，能够发现还是有一些相关性比较强的特征图的。
+<h3 id="imagenet上-vs-其他模型"><a class="markdownIt-Anchor" href="#imagenet上-vs-其他模型"></a> ImageNet上 vs 其他模型</h3>
+<h4 id="大模型的对比"><a class="markdownIt-Anchor" href="#大模型的对比"></a> 大模型的对比</h4>
+<center><img src="/2020/04/03/GhostNet/9.jpg" width="56%"></center>
+<h4 id="轻量级模型的对比"><a class="markdownIt-Anchor" href="#轻量级模型的对比"></a> 轻量级模型的对比</h4>
+<center><img src="/2020/04/03/GhostNet/10.jpg" width="56%"></center>
+<center><img src="/2020/04/03/GhostNet/11.jpg" width="56%"></center>
+<h2 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论</h2>
+<p>  为了减少近来深度神经网络的计算消耗。本文提出了一个新颖的Ghost模块来构建有高效的神经网络结构。基础的Ghost模块把原始的卷积层分为了两个部分并利用几个滤波器来生成几个本质的特征映射图。然后，在使用确定数目的低廉的线性变换对本质特征映射图进行生成ghost特征映射图。在基准模型和数据集上的实验表明我们提出的方法是一个即插即用的模块把原始的模型转化为一个压缩的模型，同时保持可比较的性能。此外，使用提出的新模块构建的GhostNet在效率和准确率上都超过了目前最好的移动端模型。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>Big things have small beginnings.</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/WechatPay.jpeg" alt="Ray WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/AliPay.jpeg" alt="Ray Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          
+            <a href="/tags/CVPR-2020/" rel="tag"># CVPR 2020</a>
+          
+            <a href="/tags/Paper/" rel="tag"># Paper</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/29/ATSS/" rel="next" title="ATSS：Adaptive Training Sample Selection">
+                <i class="fa fa-chevron-left"></i> ATSS：Adaptive Training Sample Selection
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Ray">
+            
+              <p class="site-author-name" itemprop="name">Ray</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text"> 摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text"> 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关工作"><span class="nav-number">3.</span> <span class="nav-text"> 相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ghostnet设计"><span class="nav-number">4.</span> <span class="nav-text"> GhostNet设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#利用ghost模块提取更多特征"><span class="nav-number">4.1.</span> <span class="nav-text"> 利用Ghost模块提取更多特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ghost模块的复杂度分析"><span class="nav-number">4.2.</span> <span class="nav-text"> Ghost模块的复杂度分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ghost-module-的有效性"><span class="nav-number">5.</span> <span class="nav-text"> Ghost Module 的有效性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#超参数实验对比"><span class="nav-number">5.1.</span> <span class="nav-text"> 超参数实验对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cifar-10上测试卷积核size"><span class="nav-number">5.1.1.</span> <span class="nav-text"> CIFAR-10上测试卷积核size</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cifar-10上测试不同的s每个本质特征变换出s个ghost特征"><span class="nav-number">5.1.2.</span> <span class="nav-text"> CIFAR-10上测试不同的s（每个本质特征变换出s个ghost特征）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特征图的可视化"><span class="nav-number">5.2.</span> <span class="nav-text"> 特征图的可视化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#imagenet上-vs-其他模型"><span class="nav-number">5.3.</span> <span class="nav-text"> ImageNet上 vs 其他模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#大模型的对比"><span class="nav-number">5.3.1.</span> <span class="nav-text"> 大模型的对比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#轻量级模型的对比"><span class="nav-number">5.3.2.</span> <span class="nav-text"> 轻量级模型的对比</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">6.</span> <span class="nav-text"> 结论</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ray</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a></div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('Copied');
+        else $(this).text('Copy failed');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('Copy');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

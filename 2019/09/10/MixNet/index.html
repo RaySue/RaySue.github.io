@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet">
+
+
+  
+
+
+
+
+  <meta name="description" content="MixConv is a simple drop-in replacement of vanilla depthwise convolution.">
+<meta name="keywords" content="Deep Learning,Paper Translation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MixConv: Mixed Depthwise Convolutional Kernels">
+<meta property="og:url" content="/2019/09/10/MixNet/index.html">
+<meta property="og:site_name" content="SuRui&#39;s Blog">
+<meta property="og:description" content="MixConv is a simple drop-in replacement of vanilla depthwise convolution.">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="/2019/09/10/MixNet/1.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/2.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/3.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/4.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/5.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/6.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/7.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/8.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/9.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/10.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/11.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/12.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/13.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/14.jpg">
+<meta property="og:image" content="/2019/09/10/MixNet/15.jpg">
+<meta property="og:updated_time" content="2019-09-10T08:35:48.753Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MixConv: Mixed Depthwise Convolutional Kernels">
+<meta name="twitter:description" content="MixConv is a simple drop-in replacement of vanilla depthwise convolution.">
+<meta name="twitter:image" content="/2019/09/10/MixNet/1.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="/2019/09/10/MixNet/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>MixConv: Mixed Depthwise Convolutional Kernels | SuRui's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SuRui's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">We make our own luck.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/2019/09/10/MixNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ray">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuRui's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MixConv: Mixed Depthwise Convolutional Kernels
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-09-10 23:00:00 / Modified: 16:35:48" itemprop="dateCreated datePublished" datetime="2019-09-10T23:00:00+08:00">2019-09-10</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>MixConv is a simple drop-in replacement of vanilla depthwise convolution.</p>
+<a id="more"></a>
+<p><i><b>写在前面</b><br>
+  “之前读了很多paper，更关注的是文章里的奇技淫巧，直到前一阵子打算写自己的博客的时候，我翻译了别人一篇优秀的blog，我发现你自己能理解和你能翻译到文字上还是有差距的，而且写下了印象也更深刻，索性就从正在看的这篇paper开始，给自己的博客加个专栏，专门追paper并翻译出来。因为翻译一篇文章也用不了多长时间，既帮助了自己也帮助了他人，何乐而不为。</i></p>
+<h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要</h2>
+<p>  深度卷积在当今的高效卷积神经网络中更加普遍，但卷积核的大小经常被忽略。在这篇文章中，我们系统性的研究了不同卷积核大小的影响，并发现了合并多个不同大小的卷积核的益处，能够有更好的准确率和效率。基于这个观察结果，我们提出了一个新的混合深度卷积（MixConv），即在一个卷积中自然的混合多个不同大小的卷积核。用这种简单的嵌入式替换普通的深度卷积，我们的MixConv提高了MobileNets在ImageNet的分类任务和COCO的目标检测任务的准确率和效率。为了证明MixConv的有效性，我们把它集成到AutoML的搜索空间中并得到了一个新的模型家族，叫做MixNets，效果超过了之前的移动端模型包括MobileNetV2（ImageNet top-1 准确率+4.2%），ShuffleNetV2（+3.5%），MnasNet（+1.3%），ProxylessNAS(+2.2%)，并且FBNet（+2.0%）。尤其是我们的MixNet-L 达到一个新的最高水平在ImageNet的top-1准确率上达到了78.9%，并且低于典型的移动模型的设置（&lt;600M FLOPS）。<br>
+代码：<br>
+1.<a href="https://github.com/tensorflow/tpu/tree/master/models/official/mnasnet/mixnet" target="_blank" rel="noopener">官方代码 https://github.com/tensorflow/tpu/tree/master/models/official/mnasnet/mixnet</a><br>
+2.<a href="https://github.com/leaderj1001/Mixed-Depthwise-Convolutional-Kernels.git" target="_blank" rel="noopener">Pytorch 亲测好用 https://github.com/leaderj1001/Mixed-Depthwise-Convolutional-Kernels.git</a></p>
+<h2 id="介绍"><a class="markdownIt-Anchor" href="#介绍"></a> 介绍</h2>
+<p>  卷积神经网络（ConvNets）已经在包括图像分类，检测，分割以及其他应用中被广泛使用了。目前的一个趋势是提高ConvNets的准确率和效率。随着这个趋势，深度卷积在移动端卷积神经网络中越来越普遍，比如MobileNets，ShuffleNets，NASNet，AmoebaNet，MnasNet和EfficientNet。不像标注的卷积，深度卷积的卷积核是在每个通道分别卷积的，因此减少了由因数C带来的计算消耗，C表示通道数。而设计带有深度卷积的ConvNets的时候一个很重要但是经常被忽略的因素就是卷积和的大小。虽然传统的做法是简单的使用3x3的卷积核，但最近的研究结果显示更大的卷积核比如5x5和7x7可能会提高模型的准确率和效率。</p>
+<p>  这篇文章中，我们回顾了这个基础问题：越大的卷积和越能够达到更高的准确率吗？先观察下AlexNet，众所周知每个卷积核相应的去捕捉一个局部图案，在网络的前面阶段可能是边缘，在网络的后面阶段可能是对象。(卷积神经网络的越高层具有越高的感受野)。大卷积核趋向于捕捉高分辨率的图案</p>
+<center><img src="/2019/09/10/MixNet/1.jpg"></center>
+<center><i>图1：准确率和卷积核尺寸的关系-每个点代表一个MobileNetV1和V2模型</i></center><center><i>的卷积核大小的变化，其中模型的大小用点的大小来代替。</i></center><center><i>更大的卷积核尺寸意味着更多的参数，但是当卷积核尺寸</i></center><center><i>大于9x9的时候准确率反而下降了</i></center>
+<center><img src="/2019/09/10/MixNet/2.jpg"></center>
+<center><i>图2：混合深度卷积（MixConv）-不像寻常的深度卷积对所有的通道</i></center><center><i>都只使用单个尺度的卷积核，MixConv把所有通道都分成组并且</i></center><center><i>对每个组应用不同尺寸的卷积核</i></center>
+在更多参数和计算量的代价下得到更多的细节，但是这样做总是能提高准确率吗？为了回答这个问题，我们以MobileNets为基础系统性的研究了卷积核尺寸的影响。图一显示了结果。和我们预期的一样，更大的卷积核尺寸随之有更多的参数，明显的增加了模型的大小。然而从3x3到7x7模型的准确率提升的更多，但当卷积核尺寸大于9x9之后准确率很快下降了，也就是非常大的卷积核尺寸可能会损失准确率和效率。事实上，这个观点和ConvNets最初的直观理解是一致的：在极端的案例来看卷积核的尺寸等同于输入图像的分辨率，一个ConvNet就会简单地变成一个全连接网络，已知的就低于[7]。这个研究发现了单个卷积核尺寸的局限性：我们既需要大卷积核来获取高分辨率图案也需要小卷积核来捕捉低分辨率图案以达到更好的模型准确率和效率。
+<p>  基于这个观点，我们提出了一个混合深度卷积（MixConv），即在一个卷积操作中混合了不同尺寸的卷积核，以至于可以很容易的在不同分辨率下捕捉不同的图案。图2展示了MixConv的结构，把通道分为多个组并对每个组的通道使用不同尺寸的卷积核。我们只是把MixConv这个结构简单的植入代替寻常的深度卷积，但是能够提高MobileNets在ImageNet分类任务和COCO目标检测任务的准确率和效率。</p>
+<p>  为了进一步证明我们的MixConv的有效性，我们利用神经网络结构搜索去开发一个模型家族叫做MixNets。实验结果表明我们的MixNet模型明显的超过了全部之前的移动端ConvNets，比如ShuffleNets，MnasNet，FBNet，和ProxylessNAS。尤其是我们的中等大小的模型MixNet-M在ImageNet上达到了top-1的77.0%准确率，比能达到相同效果的ResNet-152降低了12倍的参数量和31倍的FLOPS。</p>
+<h2 id="相关工作"><a class="markdownIt-Anchor" href="#相关工作"></a> 相关工作</h2>
+<p>  <b>高效的ConvNets</b>:近些年，在提高ConvNet的效率上付出了很多努力，从更有效的卷积神经网络操作，bottleneck层，到更高效的结构。深度卷积在所有移动到端大小的ConvNets上的使用尤为普遍，比如MobileNets，ShuffleNets，MnasNet等等。最近EfficientNet通过大量的使用深度卷积甚至达到了ImageNet的准确率的最好的水平和十折更高的效率。不像标准的卷积，深度卷积在每个通道上单独执行卷积，因此减少了参数的大小和计算量。我们提出的MixConv推广了深度卷积的概念，能够被认为是一个植入式的操作代替寻常的深度卷积。</p>
+<p>  <b>多尺度网络和特征：</b>我们的想法和很多之前多分支的ConvNets很相似，比如Inceptions，Inception-ResNet，ResNeXt，和NASNet。通过在每一层使用多分支，这些ConvNets能够在一层中利用不同操作（比如卷积和池化）。相似地，也有很多之前的工作是合并不同层的多尺度特征图，比如DenseNet和特征金字塔网络。然而，不像这些之前的工作大部分聚焦于改变巨大的神经网络结构以使用不同的卷积操作，我们研究的目的是设计一个可植入替换单个深度卷积的操作。<br>
+  <b>神经网络结构搜索（NAS）：</b>最近，神经网络结构搜索通过自动的设计流程和学习更好的设计选择，已经达到了比手工制作的模型更好的效果。因为我们的MixConv是一个带有很多可能设计选择的灵活操作。我们加入MixConv结构到搜索空间中，使用已有的结构搜索类似于[2, 26, 27]的方法来扩展一个新的MixNets家族。</p>
+<h2 id="mixconv"><a class="markdownIt-Anchor" href="#mixconv"></a> MixConv</h2>
+<p>  MixConv的主要思想是在一个深度卷积的操作中混合多个不同尺度的卷积核，以至于能够从输入图像中容易地获得不同类型的图案。这一节，我们将讨论特征映射图和MixConv的设计选择。</p>
+<h3 id="mixconv-特征映射图"><a class="markdownIt-Anchor" href="#mixconv-特征映射图"></a> MixConv 特征映射图</h3>
+<p>  我们从寻常的深度卷积开始。让<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>X</mi><mrow><mo>(</mo><mi>h</mi><mo separator="true">,</mo><mi>w</mi><mo separator="true">,</mo><mi>c</mi><mo>)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">X^{(h,w,c)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.07847em;">X</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord mathit">h</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mpunct">,</span><span class="mord mathit">c</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>表示维度为（h，w，c）的输入张量，其中c是空间的高度，w是空间的宽度，以及c是通道的个数。让<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>W</mi><mrow><mo>(</mo><mi>k</mi><mo separator="true">,</mo><mi>k</mi><mo separator="true">,</mo><mi>c</mi><mo separator="true">,</mo><mi>m</mi><mo>)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">W^{(k,k,c,m)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.13889em;">W</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="mpunct">,</span><span class="mord mathit">c</span><span class="mpunct">,</span><span class="mord mathit">m</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>表示深度卷积核，其中kxk是卷积核的大小，c是输入的通道个数，m表示通道的乘数（<a href="https://blog.csdn.net/makefish/article/details/89421506" target="_blank" rel="noopener">channel multiplier</a>参数相对难理解，因为MobileNets里面这个参数都是1，如果该参数等于m，那么每个通道被不同的卷积核重复m次）。简单来说，这里我们假设卷积核的宽和高都是k，但是很容易将其推广到卷积核的宽和高不同的情况。输出的张量<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>Y</mi><mrow><mo>(</mo><mi>h</mi><mo separator="true">,</mo><mi>w</mi><mo separator="true">,</mo><mi>c</mi><mo>⋅</mo><mi>m</mi><mo>)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">Y^{(h,w,c \cdot m)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.8879999999999999em;"></span><span class="strut bottom" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.22222em;">Y</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord mathit">h</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mpunct">,</span><span class="mord mathit">c</span><span class="mbin">⋅</span><span class="mord mathit">m</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>和输入有相同的空间维度（h，w）并且通道扩张输出的通道大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mo>⋅</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">m \cdot c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.44445em;"></span><span class="strut bottom" style="height:0.44445em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">m</span><span class="mbin">⋅</span><span class="mord mathit">c</span></span></span></span>，每个特征映射图的输出值计算方式如下：</p>
+<center><img src="/2019/09/10/MixNet/3.jpg"></center>
+<p>  不像寻常的深度卷积，MixConv把通道分为组并对每个组采用不同尺寸的卷积核，如图2所示。更具体地说，输入的张量被分为g组虚拟的张量<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>&lt;</mo><msup><mover accent="true"><mrow><mi>X</mi></mrow><mo>^</mo></mover><mrow><mo>(</mo><mi>h</mi><mo separator="true">,</mo><mi>w</mi><mo separator="true">,</mo><msub><mi>c</mi><mn>1</mn></msub><mo>)</mo></mrow></msup><mo separator="true">,</mo><mo>⋯</mo><mo separator="true">,</mo><msup><mover accent="true"><mrow><mi>X</mi></mrow><mo>^</mo></mover><mrow><mo>(</mo><mi>h</mi><mo separator="true">,</mo><mi>w</mi><mo separator="true">,</mo><msub><mi>c</mi><mi>g</mi></msub><mo>)</mo></mrow></msup><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;\hat{X}^{(h,w,c_1)},\cdots,\hat{X}^{(h,w,c_g)}&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.9467699999999999em;"></span><span class="strut bottom" style="height:1.1412099999999998em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mrel">&lt;</span><span class="mord"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span><span style="top:-0.25233em;margin-left:0.16668em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord mathit">h</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.07142857142857144em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="minner">⋯</span><span class="mpunct">,</span><span class="mord"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span><span style="top:-0.25233em;margin-left:0.16668em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord mathit">h</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02691em;">w</span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15000000000000002em;margin-right:0.07142857142857144em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">&gt;</span></span></span></span>，其中所有的虚拟张量<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mover accent="true"><mrow><mi>X</mi></mrow><mo>^</mo></mover></mrow><annotation encoding="application/x-tex">\hat{X}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.9467699999999999em;"></span><span class="strut bottom" style="height:0.9467699999999999em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.07847em;">X</span></span></span><span style="top:-0.25233em;margin-left:0.16668em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>都具有相同的空间高度和宽度，并且他们总共的通道数等于原始的输入张量通道数之和：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>+</mo><msub><mi>c</mi><mn>2</mn></msub><mo>+</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo>+</mo><msub><mi>c</mi><mi>g</mi></msub><mo>=</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">c_1+c_2+...+c_g=c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.58333em;"></span><span class="strut bottom" style="height:0.8694379999999999em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">2</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mbin">+</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">c</span></span></span></span>。类似的，我们也把卷积核分为g组虚拟卷积核<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>&lt;</mo><msup><mover accent="true"><mrow><mi>W</mi></mrow><mo>^</mo></mover><mrow><mo>(</mo><msub><mi>k</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>k</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>c</mi><mn>1</mn></msub><mo separator="true">,</mo><mi>m</mi><mo>)</mo></mrow></msup><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><msup><mover accent="true"><mrow><mi>W</mi></mrow><mo>^</mo></mover><mrow><mo>(</mo><msub><mi>k</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>k</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>c</mi><mi>g</mi></msub><mo separator="true">,</mo><mi>m</mi><mo>)</mo></mrow></msup><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;\hat{W}^{(k_1,k_1,c_1,m)},...,\hat{W}^{(k_1,k_1,c_g,m)}&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.9467699999999999em;"></span><span class="strut bottom" style="height:1.1412099999999998em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mrel">&lt;</span><span class="mord"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">W</span></span></span><span style="top:-0.25233em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:0.15em;margin-right:0.07142857142857144em;margin-left:-0.03148em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:0.15em;margin-right:0.07142857142857144em;margin-left:-0.03148em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15em;margin-right:0.07142857142857144em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord mathit">m</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span><span class="mord"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.13889em;">W</span></span></span><span style="top:-0.25233em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mopen">(</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:0.15em;margin-right:0.07142857142857144em;margin-left:-0.03148em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit" style="margin-right:0.03148em;">k</span><span class="vlist"><span style="top:0.15em;margin-right:0.07142857142857144em;margin-left:-0.03148em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.15000000000000002em;margin-right:0.07142857142857144em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mpunct">,</span><span class="mord mathit">m</span><span class="mclose">)</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">&gt;</span></span></span></span>。对于第t组虚拟输入的张量和卷积核，相应的虚拟输出的计算方式如下</p>
+<center><img src="/2019/09/10/MixNet/4.jpg"></center>
+<p>  最终输出的张量是对所有虚拟输出的张量<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>&lt;</mo><mrow><msubsup><mover accent="true"><mrow><mi>Y</mi></mrow><mo>^</mo></mover><mrow><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mn>1</mn></mrow><mrow><mn>1</mn></mrow></msubsup></mrow><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mrow><msubsup><mover accent="true"><mrow><mi>Y</mi></mrow><mo>^</mo></mover><mrow><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo separator="true">,</mo><mi>z</mi><mi>g</mi></mrow><mrow><mi>g</mi></mrow></msubsup></mrow><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;{\hat{Y}^{1}_{x,y,z1}},...,{\hat{Y}^{g}_{x,y,zg}}&gt;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.9467699999999999em;"></span><span class="strut bottom" style="height:1.3309859999999998em;vertical-align:-0.38421599999999995em;"></span><span class="base textstyle uncramped"><span class="mrel">&lt;</span><span class="mord textstyle uncramped"><span class="mord"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.22222em;">Y</span></span></span><span style="top:-0.25233em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="vlist"><span style="top:0.24810799999999997em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">x</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.04398em;">z</span><span class="mord mathrm">1</span></span></span></span><span style="top:-0.36299999999999993em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathrm">1</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mpunct">,</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mpunct">,</span><span class="mord textstyle uncramped"><span class="mord"><span class="mord accent"><span class="vlist"><span style="top:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="mord textstyle cramped"><span class="mord mathit" style="margin-right:0.22222em;">Y</span></span></span><span style="top:-0.25233em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="accent-body"><span>^</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="vlist"><span style="top:0.24700000000000003em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">x</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.04398em;">z</span><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span><span class="mrel">&gt;</span></span></span></span>的一个拼接:</p>
+<center><img src="/2019/09/10/MixNet/5.jpg" ; width="500" ;height="100"></center>
+<p>  其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>z</mi><mn>0</mn></msub><mo>=</mo><msub><mi>z</mi><mn>1</mn></msub><mo>+</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo>+</mo><msub><mi>z</mi><mi>g</mi></msub><mo>=</mo><mi>m</mi><mo>⋅</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">z_0=z_1+...+z_g=m \cdot c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.58333em;"></span><span class="strut bottom" style="height:0.8694379999999999em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.04398em;">z</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.04398em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">0</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord"><span class="mord mathit" style="margin-right:0.04398em;">z</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.04398em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathrm">1</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">+</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mord mathrm">.</span><span class="mbin">+</span><span class="mord"><span class="mord mathit" style="margin-right:0.04398em;">z</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.04398em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathit">m</span><span class="mbin">⋅</span><span class="mord mathit">c</span></span></span></span>是最终输出的通道的个数。</p>
+<p>  图3显示了一个使用TensorFlow python实现MixConv的简单示例。在某些平台上，MixConv能够被实现为一个单个的操作并且通过组卷积被优化。然而，想图中那样，MixConv能够被认为是一个简单的可植入代替寻常深度卷积的操作。</p>
+<center><img src="/2019/09/10/MixNet/6.jpg"></center><center><i>图3：一个TensorFlow实现MixConv的demo</i></center>
+<h3 id="mixconv设计选择"><a class="markdownIt-Anchor" href="#mixconv设计选择"></a> MixConv设计选择</h3>
+<p>  MixConv是一个带有几个设计选项的灵活卷积操作：</p>
+<p>  <b>分组数量g：</b>分组数量决定了在一个输入的张量的卷积中使用多少不同类型的卷积核。极端的情况下<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">g=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="mrel">=</span><span class="mord mathrm">1</span></span></span></span>，那MixConv就等同于一个寻常的深度卷积了。在我们的实验中，我们发现<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>g</mi><mo>=</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">g=4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="base textstyle uncramped"><span class="mord mathit" style="margin-right:0.03588em;">g</span><span class="mrel">=</span><span class="mord mathrm">4</span></span></span></span>对于MobileNets来说通常是一个把握的选择，但在神经网络结构搜索的帮助下，我们发现g的值从1到5能够进一步的提高模型的准确率和效率。</p>
+<center><img src="/2019/09/10/MixNet/7.jpg"></center>
+<center><i>MixConv在ImageNet上的表现-每个点代表同一个模型的卷积核尺寸</i></center><center><i>从3x3到13x13的变化，从上图可以看出，MixConv模型是更小的</i></center><center><i>更快的，并且比寻常的深度卷积达到了更高的准确率</i></center>
+<p>  <b>每组的卷积核大小：</b>理论上，每组卷积核大小可以是任意的。但是如果两组卷积的卷积核大小相同的话那么就等同于把两组合并成了一组。所以我们限制每组有不同的卷积核尺寸。此外，因为小卷积核通常有更少的参数和运算量，我们限制卷积核总是从3x3开始，每组单调递增2。换句话说，第i组的卷积核尺寸就是2i+1。例如，一个4组的MixConv使用的卷积核尺寸为{3x3, 5x5, 7x7, 9x9}。在这样的限制下，对于任意的分组数g每组卷积核的尺寸是预定义好的，因此简化了我们的设计过程。</p>
+<p>  <b>每组的通道数：</b>这篇文章中，我们主要考虑两个分开通道的方法：（1）等分：每组将有相同数目的滤波器；（2）指数分：第i个组将有大约总共通道数<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mo>−</mo><mi>i</mi></mrow></msup></mrow><annotation encoding="application/x-tex">2^{-i}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.824664em;"></span><span class="strut bottom" style="height:0.824664em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathrm">2</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord">−</span><span class="mord mathit">i</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>的部分。例如，给定一个4组的MixConv一共有32个滤波器。等分法会把通道分为（8，8，8，8），而指数分法将把通道分为（16，8，4，4）。</p>
+<p>  <b>膨胀卷积：</b>因为更大的卷积核需要更多的参数和计算量，一个选择是使用膨胀卷积，在不增加额外参数和运算量的情况下增大感受野。然而，像我们3.4节做的消融研究的结果，膨胀卷积通常比大卷积核准确率差。</p>
+<h2 id="mixconv在mobilenets上的表现"><a class="markdownIt-Anchor" href="#mixconv在mobilenets上的表现"></a> MixConv在MobileNets上的表现</h2>
+<p>  因为MixConv是一个简单植入代替寻常深度卷积的操作，我们评估它结合已有的MobileNets在分类和检测任务上的表现。</p>
+<p>  <b>ImageNet 分类表现：</b>图4显示了MixConv在ImageNet分类上的表现。基于MobileNet V1和V2，我们使用更大的卷积核或MixConv卷积核代替原有的3x3的深度卷积核。尤其是MixConv总是从3x3大小的卷积核开始并且每组单调递增2，所以MixConv在图片中的最右边的点有6组卷积核，它们的尺寸是{3x3，5x5，7x7，9x9，11x11，13x13}。在图中，我们注意到：（1）MixConv通常使用更少的参数和运算量，但是准确率和寻常深度卷积是相近的甚至比之更好，这意味着混合不同尺寸的卷积核能够提高准确率和效率；</p>
+<center><img src="/2019/09/10/MixNet/8.jpg"></center>
+<center><img src="/2019/09/10/MixNet/9.jpg"></center>
+<center><i>图5：卷积核尺寸对每层的影响-s2表示卷积的步长为2，其他的步长都为1</i></center>
+（2）如图1所示，寻常的深度卷积随着卷积核增大准确率会下降，相比之下MixConv对大卷积核非常不敏感，这意味着混合不同的卷积核能够在大卷积下达到更稳定的准确率。
+<p>  <b>COCO 检测的表现：</b>我们也评估了MixConv结合MobileNets在目标检测任务上的表现。表1展示了效果对比，MixConv始终比寻常深度卷积有更好的效率和准确率。尤其，比较寻常的7x7深度卷积，我们的MixConv357（即3组卷积核{3x3, 5x5, 7x7}）在用更少的参数量和运算量的情况下，在MobileNetV1上mAP高出了0.6%，在MobileNetV2上mAP高出了1.1%</p>
+<h2 id="消融研究"><a class="markdownIt-Anchor" href="#消融研究"></a> 消融研究</h2>
+<p>  为了更好的理解MixConv，我们提供了几个消融研究的结果：</p>
+<p>  <b>单层使用MixConv</b>除了把MixConv应用在整个网络上之外，图5展示了在MobileNetV2的每层上使用的效果。我们替换了15层中的一层使用9x9卷积核的寻常深度卷积，或MixConv3579（卷积核尺寸为{3x3, 5x5, 7x7, 9x9}）。如图所示，大卷积核在不同的层有着不同的影响：在大多数层，准确率没有改变太多，但是在一些步长为2的层，大卷积明显提高了准确率。尤其是MixConv3579只用了寻常9x9深度卷积的一半参数量和运算量，我们的MixConv在大多数层都与9x9寻常深度卷积表现类似或略好一点。</p>
+<center><img src="/2019/09/10/MixNet/10.jpg"></center>
+<center><i>图6：指数通道分组的效果（+exp）和膨胀卷积核（+dilated）</i></center>
+<p>  <b>通道划分方法：</b>图6对比了两个通道分组的方法：等分法（MixConv）和指数分法（MixConv+exp）。和预期一样，对于相同的卷积核大小，指数分法需要更小的参数和运算量，因为更小的卷积核对应更多的通道。我们根据经验研究表明指数分法只比等分法在MobileNetV1上稍微好一点，但同时考虑MobileNetV1和V2时没有太明显的优势。指数分法可能存在的一个局限是大卷积核没有足够的通道数去获取高分辨率图案。</p>
+<p>  <b>膨胀卷积</b>图6也对比了使用膨胀卷积的效果（用MixConv+dilated表示）。<b>对于KxK大小的卷积核尺寸可以用一个3x3的带<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>K</mi><mo>−</mo><mn>1</mn><mo>)</mo><mi mathvariant="normal">/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">(K-1)/2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.07153em;">K</span><span class="mbin">−</span><span class="mord mathrm">1</span><span class="mclose">)</span><span class="mord mathrm">/</span><span class="mord mathrm">2</span></span></span></span>膨胀率的卷积代替</b>:例如，一个9x9的卷积核将被一个带膨胀率为4的卷积代替。尤其Tensorflow膨胀卷积不兼容步长为2的卷积，我们只能在一层中用步长为1的膨胀卷积。如图所示，膨胀卷积对于小卷积来说更合理，但是对大卷积会导致准确率很快下降。我们的假设是当对于大卷积核膨胀率过大的时候，膨胀卷积会跳过很多的局部信息，从而导致准确率受损。</p>
+<h2 id="mixnet"><a class="markdownIt-Anchor" href="#mixnet"></a> MixNet</h2>
+<p>  为了进一步证明MixConv的有效性，我们利用最近在神经网络结构搜索的进展来开发一个新的基于MixConv的模型，叫做MixNets。</p>
+<h3 id="结构搜索"><a class="markdownIt-Anchor" href="#结构搜索"></a> 结构搜索</h3>
+<p>  我们的神经网络结构搜索设置和最近的MnasNet，FBNet和ProxylessNAS相近，都是使用MobileNetV2作为基线网络结构，搜索最好的卷积核尺寸，卷积扩张率，通道数和其他设计选择。然而，不像之前的工作都是用寻常深度卷积作为基础的卷积操作，我们采用我们提出的MixConv作为搜索选项。具体地，我们有5种MixConv分组数g=1，…，5作为候选项：</p>
+<ul>
+<li>
+<p><strong>3x3</strong>:MixConv有1组滤波器（g=1）卷积核大小为3x3。</p>
+</li>
+<li>
+<p>…</p>
+</li>
+<li>
+<p><strong>3x3,5x5,7x7,9x9,11x11</strong>:MixNet有5组滤波器（g=5)卷积核大小{3x3, 5x5, 7x7, 9x9, 11x11}。每组大概有相同的通道个数。</p>
+</li>
+</ul>
+<center><img src="/2019/09/10/MixNet/11.jpg"></center>
+<p>  为了简化搜索的过程，我们的搜索空间没有包含指数分法或膨胀卷积，在未来的工作中集成这些操作是很简单的。</p>
+<p>  类似于最近的神经网络结构搜索方法，我们直接的在ImageNet训练集合上搜索，然后从搜索的结果把表现最好的几个模型挑出来在ImageNet的验证集合和迁移学习数据集合上验证他们的准确率。</p>
+<h3 id="mixnet在imagenet上的表现"><a class="markdownIt-Anchor" href="#mixnet在imagenet上的表现"></a> MixNet在ImageNet上的表现</h3>
+<p>  表2展示了MixNets在ImageNet上的表现。我们通过神经网络结构搜索得到了MixNet-S和M，并且扩大MixNet-M的深度为1.3倍得到了MixNet-L。所有的模型使用和MnasNet同样的配置进行训练。</p>
+<p>  通常，我们的MixNets比最近所有的移动端ConvNets表现好：对比手工制作的模型，在相似的运算量下，我们的MixNets在top-1上比MobileNetV2提高了4.2%准确率，比ShuffleNetV2提高了3.5%的准确率。MixNets也达到了相似的效果（使用更少的参数）和最近的MobileNetV3一样，除了结构搜索以外，同时也使用了几个我们手工的优化方式。尤其是我们的MixNet-L达到了一个新的最高水平即在移动端运算量（&lt;600M）的限制下top-1的准确率达到了78.9%。比起广泛使用的ResNets，我们的MixNet-M到达了和ResNet-152相同的top-1准确率77%，但比ResNet-152少了12倍的参数量和31倍的运算量。</p>
+<p>  图7显示了在ImageNet上的效果对比。我们发现最近神经网络结构搜索明显比之前手工制作的模移动端ConvNets提高了效果。然而，通过引入一个新类型的高效MixConv，基于相同的神经网络结构搜索技术，我们能更进一步的提高模型的准确率和效率。</p>
+<center><img src="/2019/09/10/MixNet/12.jpg"></center>
+<center><img src="/2019/09/10/MixNet/13.jpg"></center>
+<h3 id="mixnet结构"><a class="markdownIt-Anchor" href="#mixnet结构"></a> MixNet结构</h3>
+<p>  为了理解为什么MixNets能够达到更好的准确率和效率，图8阐释了表2中MixNet-S和MixNet-M的网络结构。通常来说，他们都使用了各种各样的带有不同的卷积核尺寸的MixConv贯穿整个网络：小卷积核更普遍的出现在模型的早期阶段来节约计算损耗，而大卷积核更普遍的出现在模型的后期阶段为了达到更高的准确率。我们也注意到更大的MixNet-M趋向于使用更大的卷积核和更多的层来追求更高的准确率，同时也有更多的参数和计算量。不像寻常的深度卷积对于使用大卷积核准确率会严重的下降，我们的MixNets能够利用非常大的卷积核，比如9x9和11x11的卷积核从输入图像中来捕捉高分辨的图案，而不会损失模型的准确率和效率。</p>
+<center><img src="/2019/09/10/MixNet/14.jpg"></center>
+<center><img src="/2019/09/10/MixNet/15.jpg"></center>
+<h3 id="迁移学习表现"><a class="markdownIt-Anchor" href="#迁移学习表现"></a> 迁移学习表现</h3>
+<p>  我们也在四个广泛使用的迁移学习数据集合上评估了我们的MixNets，包括CIFAR-10/100，Oxford-IIIT Pets，和Food-101。表3显示了这些数据集的统计信息，训练集合大小，测试集合大小，和类别数量。</p>
+<p>  图9比较了我们的MixNet-S/M和一些之前的模型在迁移学习上的准确率和运算量。对于每个一个模型，我们先从随机初始化权重在ImageNet数据集上训练然后在目标数据集上使用相似的设置[10]微调所有的权重。MobileNets，Inception，ResNet，DenseNet的准确率和计算量是从[10]得来的。通常，我们的MixNets在所有这些数据集合上明显超过了之前的模型，尤其是在最被广泛使用的CIFAR-10和CIFAR-100，说明我们的MixNets在迁移学习上也可以很好的推广。尤其是，我们的MixNet-M在3.49M参数量和352M运算量的时候达到了97.92%的准确率，比ResNet-50的效率高11.4倍，并且准确率高出1%。</p>
+<h2 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论</h2>
+<p>  这篇文章我们回顾了卷积核大小对于深度卷积的影响，并确定了传统深度卷积受限于单一的卷积核尺寸的影响。为了解决这个问题，我们提出了MixConv，混合了多个卷积核在一个卷积操作中，利用了多尺度卷积核的优势。我们指出我们的MixConv是一个可以简单植入来代替寻常深度卷积的操作，并且能够给MobileNets在图像分类和目标检测任务上提高准确率和效率。基于我们提出的MixConv，我们使用神经网络结构搜索技术，进一步开发了一个新的模型家族叫做MixNets。实验结果表明我们的MixNets在准确率和效率上明显好过最近的移动端ConvNets无论是在ImageNet分类上还是四个被广泛使用的迁移学习数据集合上。</p>
+<h2 id="参考文献"><a class="markdownIt-Anchor" href="#参考文献"></a> 参考文献</h2>
+<p>[1] Lukas Bossard, Matthieu Guillaumin, and Luc Van Gool. Food-101–mining discriminative components with random forests. ECCV, pages 446–461, 2014.<br>
+[2] Han Cai, Ligeng Zhu, and Song Han. Proxylessnas: Direct neural architecture search on target task and hardware. ICLR, 2019.<br>
+[3] François Chollet. Xception: Deep learning with depthwise separable convolutions.CVPR, pages 1610–02357, 2017.<br>
+[4] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. CVPR, pages 770–778, 2016.<br>
+[5] Andrew Howard, Mark Sandler, Grace Chu, Liang-Chieh Chen, Bo Chen, Mingxing Tan, Weijun Wang, Yukun Zhu, Ruoming Pang, Vijay Vasudevan, Quoc V. Le, and Hartwig Adam. Searching for mobilenetv3. arXiv preprint arXiv:1905.02244, 2019.<br>
+[6] Andrew G Howard, Menglong Zhu, Bo Chen, Dmitry Kalenichenko, Weijun Wang, Tobias Weyand, Marco Andreetto, and Hartwig Adam. Mobilenets: Efﬁcient convolutional neural networks for mobile vision applications. arXiv preprint arXiv:1704.04861, 2017.<br>
+[7] Gao Huang, Danlu Chen, Tianhong Li, Felix Wu, Laurens van der Maaten, and Kilian Q Weinberger. Multi-scale dense networks for resource efﬁcient image classiﬁcation. ICLR, 2017.<br>
+[8] Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q Weinberger. Densely connected convolutional networks. CVPR, 2017.<br>
+[9] Forrest N Iandola, Song Han, Matthew W Moskewicz, Khalid Ashraf, William J Dally, and Kurt Keutzer. Squeezenet: Alexnet-level accuracy with 50x fewer parameters and &lt;0.5 mb model size. arXiv preprint arXiv:1602.07360, 2016.<br>
+[10] Simon Kornblith, Jonathon Shlens, and Quoc V Le. Do better imagenet models transfer better? CVPR, 2018.<br>
+[11] Alex Krizhevsky and Geoffrey Hinton. Learning multiple layers of features from tiny images. Technical Report, 2009.<br>
+[12] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton. Imagenet classiﬁcation with deep convolutional neural networks. In NIPS, pages 1097–1105, 2012.<br>
+[13] Tsung-Yi Lin, Piotr Dollár, Ross Girshick, Kaiming He, Bharath Hariharan, and Serge Belongie. Feature pyramid networks for object detection. CVPR, 2017.<br>
+[14] Chenxi Liu, Barret Zoph, Jonathon Shlens, Wei Hua, Li-Jia Li, Li Fei-Fei, Alan Yuille, Jonathan Huang, and Kevin Murphy. Progressive neural architecture search. ECCV, 2018.<br>
+[15] Hanxiao Liu, Karen Simonyan, and Yiming Yang. DARTS: Differentiable architecture search. ICLR, 2019. 12<br>
+[16] Ningning Ma, Xiangyu Zhang, Hai-Tao Zheng, and Jian Sun. Shufﬂenet v2: Practical guidelines for efﬁcient cnn architecture design. ECCV, 2018.<br>
+[17] Omkar M Parkhi, Andrea Vedaldi, Andrew Zisserman, and CV Jawahar. Cats and dogs.CVPR, pages 3498–3505, 2012.<br>
+[18] Esteban Real, Alok Aggarwal, Yanping Huang, and Quoc V Le. Regularized evolution for image classiﬁer architecture search. AAAI, 2019.<br>
+[19] Olga Russakovsky, Jia Deng, Hao Su, Jonathan Krause, Sanjeev Satheesh, Sean Ma, Zhiheng Huang, Andrej Karpathy, Aditya Khosla, Michael Bernstein, et al. Imagenet large scale visual recognition challenge. International Journal of Computer Vision, 115 (3):211–252, 2015.<br>
+[20] Mark Sandler, Andrew Howard, Menglong Zhu, Andrey Zhmoginov, and Liang-Chieh Chen.Mobilenetv2: Inverted residuals and linear bottlenecks. CVPR, 2018.<br>
+[21] Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich. Going deeper with convolutions. CVPR, pages 1–9, 2015.<br>
+[22] Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew Wojna.Rethinking the inception architecture for computer vision. CVPR, pages 2818–2826, 2016.<br>
+[23] Christian Szegedy, Sergey Ioffe, Vincent Vanhoucke, and Alexander A Alemi.Inception-v4, inception-resnet and the impact of residual connections on learning. AAAI, 4:12, 2017.<br>
+[24] Christian Szegedy, Sergey Ioffe, Vincent Vanhoucke, and Alexander A Alemi.Inception-v4, inception-resnet and the impact of residual connections on learning. AAAI, 4:12, 2017.<br>
+[25] Mingxing Tan and Quoc V Le. Efﬁcientnet: Rethinking model scaling for convolutional neural networks. ICML, 2019.<br>
+[26] Mingxing Tan, Bo Chen, Ruoming Pang, Vijay Vasudevan, and Quoc V Le. Mnasnet:Platform-aware neural architecture search for mobile. CVPR, 2019.<br>
+[27] Bichen Wu, Xiaoliang Dai, Peizhao Zhang, Yanghan Wang, Fei Sun, Yiming Wu, Yuandong Tian, Peter Vajda, Yangqing Jia, and Kurt Keutzer. Fbnet: Hardware-aware efﬁcient convnet design via differentiable neural architecture search. CVPR, 2019.<br>
+[28] Saining Xie, Ross Girshick, Piotr Dollár, Zhuowen Tu, and Kaiming He. Aggregated residual transformations for deep neural networks. CVPR, pages 5987–5995, 2017.<br>
+[29] Fisher Yu and Vladlen Koltun. Multi-scale context aggregation by dilated convolutions.ICLR, 2016.<br>
+[30] Xiangyu Zhang, Xinyu Zhou, Mengxiao Lin, and Jian Sun. Shufﬂenet: An extremely efﬁcient convolutional neural network for mobile devices. CVPR, 2018.<br>
+[31] Barret Zoph and Quoc V Le. Neural architecture search with reinforcement learning.ICLR, 2017.<br>
+[32] Barret Zoph, Vijay Vasudevan, Jonathon Shlens, and Quoc V Le. Learning transferable architectures for scalable image recognition. CVPR, 2018.</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<h3 id="dl-trick"><a class="markdownIt-Anchor" href="#dl-trick"></a> DL trick</h3>
+<ol>
+<li>在LeCun提出了LeNet之后，很多的好文章其实都是抓住了深度学习中的一些细节，往往研究这些细节就能够产生很好的效果。</li>
+<li>可以利用MixConv来代替你的深度卷积，提升移动端模型的性能。</li>
+<li>如果你发现了一个比较有益的基础结构，可以放在神经网络结构的搜索空间中去放大它的优势。</li>
+<li>很多文章的结果是可以直接拿来用的，这样你就不需要再重新做一些实验了，比如这里引用了文章[10]的一些网络在ImageNet上的准确率和效率结果。</li>
+<li>一个好的消融实验甚至能够帮助你发现你未曾思考过的问题。</li>
+</ol>
+<h3 id="english"><a class="markdownIt-Anchor" href="#english"></a> English</h3>
+<ol>
+<li>vanilla、ordinary common regular 差不多是一个意思，但是vanilla跟倾向于寻常的，而不是普通的，常见的</li>
+<li>study research 都翻译成‘研究’就通顺了</li>
+<li>Based on this observation 我翻译成“基于这个观点”，observation的意思里面大多是观察和监视，但是我觉得这个语境翻译成“观点”可能更加合适。</li>
+<li>patterns n.模式；摹制；复写，这里我们翻译为图案。</li>
+<li>it is straightforward to generalize（推广） to cases where kernel width and height are different.</li>
+<li>高频句子：MixConv is a simple drop-in replacement of vanilla depthwise convolution</li>
+<li>As shown in the ﬁgure - 如图所示</li>
+<li>it is trivial to integrate them in future work. 这里的trivial翻译成”简单的“最合适</li>
+<li>我发现一个句子翻译很多次，每次表述上可能都会有点差异，但是大体意思是一致的。有时候一个词翻译很多次之后才能找到最佳的翻译结果。</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>Big things have small beginnings.</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/WechatPay.jpeg" alt="Ray WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/images/AliPay.jpeg" alt="Ray Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          
+            <a href="/tags/Paper-Translation/" rel="tag"># Paper Translation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/31/ConvNets/" rel="next" title="ConvNets: A Modular Perspective">
+                <i class="fa fa-chevron-left"></i> ConvNets: A Modular Perspective
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/17/EfficientNet/" rel="prev" title="EfﬁcientNet">
+                EfﬁcientNet <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Ray">
+            
+              <p class="site-author-name" itemprop="name">Ray</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text"> 摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text"> 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关工作"><span class="nav-number">3.</span> <span class="nav-text"> 相关工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mixconv"><span class="nav-number">4.</span> <span class="nav-text"> MixConv</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mixconv-特征映射图"><span class="nav-number">4.1.</span> <span class="nav-text"> MixConv 特征映射图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mixconv设计选择"><span class="nav-number">4.2.</span> <span class="nav-text"> MixConv设计选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mixconv在mobilenets上的表现"><span class="nav-number">5.</span> <span class="nav-text"> MixConv在MobileNets上的表现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消融研究"><span class="nav-number">6.</span> <span class="nav-text"> 消融研究</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mixnet"><span class="nav-number">7.</span> <span class="nav-text"> MixNet</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#结构搜索"><span class="nav-number">7.1.</span> <span class="nav-text"> 结构搜索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mixnet在imagenet上的表现"><span class="nav-number">7.2.</span> <span class="nav-text"> MixNet在ImageNet上的表现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mixnet结构"><span class="nav-number">7.3.</span> <span class="nav-text"> MixNet结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迁移学习表现"><span class="nav-number">7.4.</span> <span class="nav-text"> 迁移学习表现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">8.</span> <span class="nav-text"> 结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">9.</span> <span class="nav-text"> 参考文献</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">10.</span> <span class="nav-text"> 总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dl-trick"><span class="nav-number">10.1.</span> <span class="nav-text"> DL trick</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#english"><span class="nav-number">10.2.</span> <span class="nav-text"> English</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ray</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a></div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.2.0"></script>
+
+  <script src="/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.2.0"></script>
+<script src="/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('Copied');
+        else $(this).text('Copy failed');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('Copy');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
