@@ -102,14 +102,13 @@
 
 
 
-  <meta name="description" content="Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example? https://github.com/tianzhi0549/FCOS">
-<meta name="keywords" content="Paper,Deep Learning,ICCV 2019">
+  <meta name="keywords" content="Paper,Deep Learning,ICCV 2019">
 <meta property="og:type" content="article">
 <meta property="og:title" content="FCOS: Fully Convolutional One-Stage Object Detection">
 <meta property="og:url" content="/2020/04/05/FCOS/index.html">
 <meta property="og:site_name" content="SuRui&#39;s Blog">
-<meta property="og:description" content="Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example? https://github.com/tianzhi0549/FCOS">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/2.jpg">
 <meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/1.jpg">
 <meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/2.jpg">
 <meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/3.jpg">
@@ -120,8 +119,7 @@
 <meta property="og:updated_time" content="2020-04-06T06:00:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FCOS: Fully Convolutional One-Stage Object Detection">
-<meta name="twitter:description" content="Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example? https://github.com/tianzhi0549/FCOS">
-<meta name="twitter:image" content="/RaySue.github.io/2020/04/05/FCOS/1.jpg">
+<meta name="twitter:image" content="/RaySue.github.io/2020/04/05/FCOS/2.jpg">
 
 
 
@@ -465,12 +463,14 @@
       
 
       
-        <p>  Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example?</p>
-<p><a href="https://github.com/tianzhi0549/FCOS" target="_blank" rel="noopener">https://github.com/tianzhi0549/FCOS</a></p>
+        <center><img src="/RaySue.github.io/2020/04/05/FCOS/2.jpg" width="96%"></center>
+<hr>
 <a id="more"></a>
+<p>  Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example?</p>
 <blockquote>
 <p>  简单、鲁棒的Anchor free目标检测算法，<strong>核心思想</strong> 是利用FCNs-based的方式来做目标检测，对featureMap上的结果进行逐像素的预测回归，通过multi-level FPN的不同层选取预测不同尺度的目标解决重叠部分预测模糊的问题，对于低质量的目标框提出了<strong>center-ness</strong>分支来预测像素到相应目标框中心的得分并与分类的得分相乘得到最终的得分用于NMS，预测head的三个分支在不同特征层间是权重共享的，只是在每个特征层加了一个可学习的因子，用于适应每层预测不同尺度的目标。</p>
 </blockquote>
+<p><a href="https://github.com/tianzhi0549/FCOS" target="_blank" rel="noopener">https://github.com/tianzhi0549/FCOS</a></p>
 <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要</h2>
 <p>  我们提出了一个全卷积一阶段目标检测器，以逐像素预测的方式来解决目标检测问题，类似于语义分割。几乎目前所有的SOTA检测器比如RetinaNet，SSD，Yolov3，以及Faster R-CNN都依赖于预定义的锚点框。相反我们提出的目标检测器FCOS是anchor free的，也就是没有预先的建议框。因为消除了一系列预定义的锚点框，FCOS完全避开了关于锚点框的复杂计算，比如在训练期间为了挑选正负样本的交叠计算（IoU）。更重要的是，我们也避开了所有的关于锚点框的超参数，这些超参数经常对最终的模型效果很敏感。只用了NMS后处理，利用ResNeXt-64x4d-101作为主干网络的FCOS达到了44.7%的AP，单个模型且单个尺度测试，以更加简单的模型优势超过了之前一阶段的目标检测器。首先，我们证明了一个更简单更灵活的目标检测框架达到了更好的检测准确率。我们希望我们提出的FCOS框架能够被视为一个简单鲁棒的示例级别任务的替代方法。</p>
 <center><img src="/RaySue.github.io/2020/04/05/FCOS/1.jpg" width="76%"></center>
