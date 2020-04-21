@@ -102,13 +102,13 @@
 
 
 
-  <meta name="description" content="GhostNet：More Features from Cheap Operations Code：https://github.com/huawei-noah/ghostnet">
-<meta name="keywords" content="Deep Learning,CVPR 2020,Paper">
+  <meta name="description" content="GhostNet:More Features from Cheap Operations Code:https://github.com/huawei-noah/ghostnet">
+<meta name="keywords" content="CVPR 2020,Paper,Deep Learning">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GhostNet：More Features from Cheap Operations">
 <meta property="og:url" content="/2020/04/03/GhostNet/index.html">
 <meta property="og:site_name" content="SuRui&#39;s Blog">
-<meta property="og:description" content="GhostNet：More Features from Cheap Operations Code：https://github.com/huawei-noah/ghostnet">
+<meta property="og:description" content="GhostNet:More Features from Cheap Operations Code:https://github.com/huawei-noah/ghostnet">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="/RaySue.github.io/2020/04/03/GhostNet/1.jpg">
@@ -125,7 +125,7 @@
 <meta property="og:updated_time" content="2020-04-03T06:00:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GhostNet：More Features from Cheap Operations">
-<meta name="twitter:description" content="GhostNet：More Features from Cheap Operations Code：https://github.com/huawei-noah/ghostnet">
+<meta name="twitter:description" content="GhostNet:More Features from Cheap Operations Code:https://github.com/huawei-noah/ghostnet">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
 
 
@@ -266,22 +266,6 @@
         
         
           
-          <li class="menu-item menu-item-tags">
-
-    
-    
-      
-    
-
-    
-
-    <a href="/RaySue.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
-
-  </li>
-        
-        
-        
-          
           <li class="menu-item menu-item-categories">
 
     
@@ -298,6 +282,22 @@
         
         
           
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
           <li class="menu-item menu-item-about">
 
     
@@ -307,7 +307,7 @@
 
     
 
-    <a href="/RaySue.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>About</a>
+    <a href="/RaySue.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-bolt"></i> <br>About</a>
 
   </li>
 
@@ -460,8 +460,8 @@
       
 
       
-        <p>GhostNet：More Features from Cheap Operations</p>
-<p>Code：<a href="https://github.com/huawei-noah/ghostnet" target="_blank" rel="noopener">https://github.com/huawei-noah/ghostnet</a></p>
+        <p>GhostNet:More Features from Cheap Operations</p>
+<p>Code:<a href="https://github.com/huawei-noah/ghostnet" target="_blank" rel="noopener">https://github.com/huawei-noah/ghostnet</a></p>
 <a id="more"></a>
 <blockquote>
 <p>  发现一个点并解决就是一篇CVPR，该文章主要发现了优秀的网络的特点是feature map提取过程中的冗余性，这种冗余性体现在很多成对的feature map间很像，就好像彼此的“ghost”，而这种特征冗余性对于理解图像来说还是必要的，所以文章把feature map分为两种，一种是本质特征，一种是“ghost”，其中“ghost”可以通过低廉的线性运算来完成，先通过普通的卷积提取本质特征，再通过线性变换对特征进行增强，这样大大减少了参数和运算量。感觉上是对原始的卷积特征一部分保留，一部分用深度可分离卷积代替。Ghost module是一个即插即用的模块，可以用来替换分类网络的卷积层从而获得更高的精度。d是ghost模块的卷积核尺寸，s是ghost模块通过卷积对同一个本质特征映射图产生ghost特征映射图的数目。通过MSE来对比特征映射图之间的差异能够发现特征图间的相关性。</p>
@@ -585,11 +585,11 @@
         
         <div class="post-tags">
           
-            <a href="/RaySue.github.io/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
-          
             <a href="/RaySue.github.io/tags/CVPR-2020/" rel="tag"># CVPR 2020</a>
           
             <a href="/RaySue.github.io/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/RaySue.github.io/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
           
         </div>
       
@@ -611,6 +611,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/RaySue.github.io/2020/04/05/FCOS/" rel="prev" title="FCOS: Fully Convolutional One-Stage Object Detection">
+                FCOS: Fully Convolutional One-Stage Object Detection <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -681,7 +685,7 @@
                 
                   <a href="/RaySue.github.io/archives/">
                 
-                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-count">9</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -702,9 +706,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -910,7 +912,7 @@
     
     
   
-  <script color="98,128,98" opacity="0.39" zindex="-1" count="88" src="/RaySue.github.io/lib/canvas-nest/canvas-nest-nomobile.min.js"></script>
+  <script color="68,88,68" opacity="0.39" zindex="-1" count="128" src="/RaySue.github.io/lib/canvas-nest/canvas-nest-nomobile.min.js"></script>
 
 
 

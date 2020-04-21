@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/RaySue.github.io/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/RaySue.github.io/lib/pace/pace-theme-flash.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/RaySue.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/RaySue.github.io/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/RaySue.github.io/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/RaySue.github.io/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/RaySue.github.io/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/RaySue.github.io/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/RaySue.github.io/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet">
+
+
+  
+
+
+
+
+  <meta name="description" content="Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example? https://github.com/tianzhi0549/FCOS">
+<meta name="keywords" content="Paper,Deep Learning,ICCV 2019">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FCOS: Fully Convolutional One-Stage Object Detection">
+<meta property="og:url" content="/2020/04/05/FCOS/index.html">
+<meta property="og:site_name" content="SuRui&#39;s Blog">
+<meta property="og:description" content="Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example? https://github.com/tianzhi0549/FCOS">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/1.jpg">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/2.jpg">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/3.jpg">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/4.jpg">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/5.jpg">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/6.jpg">
+<meta property="og:image" content="/RaySue.github.io/2020/04/05/FCOS/7.jpg">
+<meta property="og:updated_time" content="2020-04-06T06:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FCOS: Fully Convolutional One-Stage Object Detection">
+<meta name="twitter:description" content="Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example? https://github.com/tianzhi0549/FCOS">
+<meta name="twitter:image" content="/RaySue.github.io/2020/04/05/FCOS/1.jpg">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="/2020/04/05/FCOS/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>FCOS: Fully Convolutional One-Stage Object Detection | SuRui's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/RaySue.github.io/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SuRui's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">We make our own luck.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-bolt"></i> <br>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/RaySue.github.io/2020/04/05/FCOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ray">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/RaySue.github.io/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuRui's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">FCOS: Fully Convolutional One-Stage Object Detection
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-04-05 13:18:00" itemprop="dateCreated datePublished" datetime="2020-04-05T13:18:00+08:00">2020-04-05</time>
+            </span>
+          
+
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2020-04-06 14:00:00" itemprop="dateModified" datetime="2020-04-06T14:00:00+08:00">2020-04-06</time>
+              </span>
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/RaySue.github.io/categories/ObjectDetection/" itemprop="url" rel="index"><span itemprop="name">ObjectDetection</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Can we solve object detection in the neat per-pixel prediction fashion, analogue to FCN for semantic segmentation, for example?</p>
+<p><a href="https://github.com/tianzhi0549/FCOS" target="_blank" rel="noopener">https://github.com/tianzhi0549/FCOS</a></p>
+<a id="more"></a>
+<blockquote>
+<p>  简单、鲁棒的Anchor free目标检测算法，<strong>核心思想</strong> 是利用FCNs-based的方式来做目标检测，对featureMap上的结果进行逐像素的预测回归，通过multi-level FPN的不同层选取预测不同尺度的目标解决重叠部分预测模糊的问题，对于低质量的目标框提出了<strong>center-ness</strong>分支来预测像素到相应目标框中心的得分并与分类的得分相乘得到最终的得分用于NMS，预测head的三个分支在不同特征层间是权重共享的，只是在每个特征层加了一个可学习的因子，用于适应每层预测不同尺度的目标。</p>
+</blockquote>
+<h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要</h2>
+<p>  我们提出了一个全卷积一阶段目标检测器，以逐像素预测的方式来解决目标检测问题，类似于语义分割。几乎目前所有的SOTA检测器比如RetinaNet，SSD，Yolov3，以及Faster R-CNN都依赖于预定义的锚点框。相反我们提出的目标检测器FCOS是anchor free的，也就是没有预先的建议框。因为消除了一系列预定义的锚点框，FCOS完全避开了关于锚点框的复杂计算，比如在训练期间为了挑选正负样本的交叠计算（IoU）。更重要的是，我们也避开了所有的关于锚点框的超参数，这些超参数经常对最终的模型效果很敏感。只用了NMS后处理，利用ResNeXt-64x4d-101作为主干网络的FCOS达到了44.7%的AP，单个模型且单个尺度测试，以更加简单的模型优势超过了之前一阶段的目标检测器。首先，我们证明了一个更简单更灵活的目标检测框架达到了更好的检测准确率。我们希望我们提出的FCOS框架能够被视为一个简单鲁棒的示例级别任务的替代方法。</p>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/1.jpg" width="76%"></center>
+<center>图1 左边的图展示了FCOS的工作方式，通过预测一个4维的向量（l，t，r，b）在每个前景的位置来对目标框进行编码（在训练阶段通过目标框的真实值信息进行监督）。右边的图显示了当一个位置在多个目标框内的情况，对于这个位置应该回归哪个框存是不明确的。</center>
+<h2 id="介绍"><a class="markdownIt-Anchor" href="#介绍"></a> 介绍</h2>
+<p>   <strong>Anchor-based目标检测的四个主要缺点</strong> :</p>
+<ul>
+<li>
+<p>目标检测的效果对于anchor boxes的尺寸、比例以及数量是很敏感的，所以需要仔细的寻找最优超参数。</p>
+</li>
+<li>
+<p>尽管细心设计了anchor boxes的超参，但是尺寸、比例等仍旧是固定的，对于目标的大小变换跨度大，尤其是小目标仍旧难以解决。而且预定义的anchor boxes也束缚了目标检测器的泛化能力。在新的任务上可能需要重新设计这些超参数，在训练阶段选取正负样本的时候固定的IoU阈值也很有影响。</p>
+</li>
+<li>
+<p>为了增加召回率，anchor-based方法通常会需要在每个位置密集的布置锚点框，而大多数的这些锚点框都被标记为负样本，这导致了负样本的激增，从而正负样本在训练的时候是严重的不平衡的。</p>
+</li>
+<li>
+<p>在选择样本阶段需要复杂的IoU计算，导致计算量增加。</p>
+</li>
+</ul>
+<p>  我们能不能利用整洁的逐像素预测方法类似语义分割FCN的方式来解决目标检测问题呢？答案是肯定的。具体做法是<strong>在featureMap水平上每个空间位置点上预测一个4维的向量加一个类别</strong>。如图1所示，4维向量表示点到边界框四条边的偏移量。</p>
+<p>  只做特定领域的目标检测是容易的，而通用目标检测需要面对的问题更多。如图1右侧所示在高重叠的目标检测场景，<strong>主要问题</strong>目标框重叠的位置到底回归哪个目标框是不明确的，对应的解决方案：</p>
+<ul>
+<li>
+<p>FPN能够消除大部分的这种情况，把大目标和小目标分在不同的金字塔层来预测。</p>
+</li>
+<li>
+<p>引入center-ness分支（Channel为1），用于预测该像素到目标框中心点的偏移，然后把对应像素点的该分数用于NMS后处理的框合并。</p>
+</li>
+</ul>
+<p>  所以FCOS框架有以下优点：</p>
+<ul>
+<li>
+<p>目标检测现在和许多其他的FCN-解决任务统一了，比如语义分割，对于来自于其他任务的复用来说更容易。</p>
+</li>
+<li>
+<p>目标检测成了proposal free和anchor free明显减少了超参数。由于超参数的选择尤其需要启发式的方法和许多技巧来得到好的效果。因此我们的方法让目标检测变的相当简单。</p>
+</li>
+<li>
+<p>通过消除锚点框，我们的新检测器能够完全避开复杂的IoU运算，相比较anchor-based减少了训练阶段的内存占用。</p>
+</li>
+<li>
+<p>没有花哨的技巧，我在一阶段检测器中表现sota。而且FCOS也可以被当做两阶段目标检测器中的RPN，来代替anchor-based取得更好的结果。</p>
+</li>
+<li>
+<p>我们提出的目标检测器可以很快的延伸到其他视觉领域，只需要做很小的修改。包括实例分割和关键点检测。</p>
+</li>
+</ul>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/2.jpg" width="96%"></center>
+<center>图2 FCOS的网络结构，其中C3、C4和C5表示主干网络的特征映射图而且P3和P7是用于做最终预测的特征水平。H * W是特征映射图的高和宽。'/s'（s=8，16，...，128）是输入图像在不同水平的特征映射图的下采样倍数。上图是以800 * 1024的输入图像为例子</center>
+<h2 id="方法介绍"><a class="markdownIt-Anchor" href="#方法介绍"></a> 方法介绍</h2>
+<h3 id="fcns-based目标检测"><a class="markdownIt-Anchor" href="#fcns-based目标检测"></a> FCNs-based目标检测</h3>
+<h4 id="网络结构"><a class="markdownIt-Anchor" href="#网络结构"></a> 网络结构</h4>
+<p>  如图1所示，网络预测类别和回归到边界框的四个距离（l, t, r, d）。设s表示相应的featureMap下采样的倍数，那么对于featureMap上的每个像素点（x,y）都可以通过公式<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mo>[</mo><mfrac><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>]</mo><mo>+</mo><mi>x</mi><mi>s</mi><mo separator="true">,</mo><mo>[</mo><mfrac><mrow><mi>s</mi></mrow><mrow><mn>2</mn></mrow></mfrac><mo>]</mo><mo>+</mo><mi>y</mi><mi>s</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">([\frac{s}{2}] + xs, [\frac{s}{2}] + ys)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.095em;vertical-align:-0.345em;"></span><span class="base textstyle uncramped"><span class="mopen">(</span><span class="mopen">[</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.345em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.394em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">s</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mclose">]</span><span class="mbin">+</span><span class="mord mathit">x</span><span class="mord mathit">s</span><span class="mpunct">,</span><span class="mopen">[</span><span class="mord reset-textstyle textstyle uncramped"><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span><span class="mfrac"><span class="vlist"><span style="top:0.345em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathrm">2</span></span></span></span><span style="top:-0.22999999999999998em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle textstyle uncramped frac-line"></span></span><span style="top:-0.394em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">s</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="sizing reset-size5 size5 reset-textstyle textstyle uncramped nulldelimiter"></span></span><span class="mclose">]</span><span class="mbin">+</span><span class="mord mathit" style="margin-right:0.03588em;">y</span><span class="mord mathit">s</span><span class="mclose">)</span></span></span></span>映射到输入图像的坐标上，即最接近感受野的位置（x,y）的中心。</p>
+<p>  背景的类别<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>c</mi><mo>∗</mo></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c^*=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.688696em;"></span><span class="strut bottom" style="height:0.688696em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord">∗</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">=</span><span class="mord mathrm">0</span></span></span></span>，如果特征映射图上的一个位置（x,y）用于预测一个目标框，那么训练回归的目标（l, t, r, d）可以用如下公式表示，其中x_0，y_0是目标框的左上角点，x_1， y_1是目标框的右下角点。</p>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/3.jpg" width="36%"></center>
+<center>公式一</center>
+<p>  网络输出C维的类别向量和4维的目标位置向量<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>t</mi><mo>=</mo><mo>(</mo><mi>l</mi><mo separator="true">,</mo><mi>t</mi><mo separator="true">,</mo><mi>r</mi><mo separator="true">,</mo><mi>b</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">t=(l,t,r,b)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">t</span><span class="mrel">=</span><span class="mopen">(</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mpunct">,</span><span class="mord mathit">t</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mpunct">,</span><span class="mord mathit">b</span><span class="mclose">)</span></span></span></span>，C个类别不是多类别分类任务，而是<strong>C个二分类</strong>。</p>
+<h4 id="损失函数"><a class="markdownIt-Anchor" href="#损失函数"></a> 损失函数</h4>
+<p>  损失函数定义如下，其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>c</mi><mi>l</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{cls}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">L</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">c</span><span class="mord mathit" style="margin-right:0.01968em;">l</span><span class="mord mathit">s</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>是focal loss用于分裂，而<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>r</mi><mi>e</mi><mi>g</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{reg}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">L</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit" style="margin-right:0.02778em;">r</span><span class="mord mathit">e</span><span class="mord mathit" style="margin-right:0.03588em;">g</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>是IOU loss用于回归，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>N</mi><mrow><mi>p</mi><mi>o</mi><mi>s</mi></mrow></msub></mrow><annotation encoding="application/x-tex">N_{pos}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.10903em;">N</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.10903em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">p</span><span class="mord mathit">o</span><span class="mord mathit">s</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>表示正样本的个数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>λ</mi></mrow><annotation encoding="application/x-tex">\lambda</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.69444em;"></span><span class="strut bottom" style="height:0.69444em;vertical-align:0em;"></span><span class="base textstyle uncramped"><span class="mord mathit">λ</span></span></span></span>文中设置为1用于平衡权重。对特征金字塔所有层的loss进行求和。<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mn>1</mn><mrow><msubsup><mi>c</mi><mrow><mi>i</mi></mrow><mrow><mo>∗</mo></mrow></msubsup><mo>&gt;</mo><mn>0</mn></mrow></msub></mrow><annotation encoding="application/x-tex">1_{c^{*}_{i} &gt; 0}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.99484em;vertical-align:-0.3504em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathrm">1</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.2862857142857143em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord scriptscriptstyle cramped"><span class="mord mathit">i</span></span></span></span><span style="top:-0.34479999999999994em;margin-right:0.07142857142857144em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-scriptstyle scriptscriptstyle cramped"><span class="mord scriptscriptstyle cramped"><span class="mord">∗</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">&gt;</span><span class="mord mathrm">0</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>是一个符号函数，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>c</mi><mrow><mi>i</mi></mrow><mrow><mo>∗</mo></mrow></msubsup><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c^{*}_{i} &gt; 0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.688696em;"></span><span class="strut bottom" style="height:0.94736em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">c</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">i</span></span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord">∗</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">&gt;</span><span class="mord mathrm">0</span></span></span></span>为1，其他为0。表示只对正样本进行回归。</p>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/4.jpg" width="48%"></center>
+<center>公式二</center>
+<h4 id="推理"><a class="markdownIt-Anchor" href="#推理"></a> 推理</h4>
+<p>  通过FCOS的推理我们从<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>F</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">F_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.68333em;"></span><span class="strut bottom" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit" style="margin-right:0.13889em;">F</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:-0.13889em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>层金字塔得到了分类的得分<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>p</mi><mrow><mi>x</mi><mo separator="true">,</mo><mi>y</mi></mrow></msub></mrow><annotation encoding="application/x-tex">p_{x,y}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.43056em;"></span><span class="strut bottom" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">x</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03588em;">y</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>，和回归的结果<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>t</mi><mrow><mi>x</mi><mo separator="true">,</mo><mi>y</mi></mrow></msub></mrow><annotation encoding="application/x-tex">t_{x,y}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.61508em;"></span><span class="strut bottom" style="height:0.9011879999999999em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">t</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">x</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03588em;">y</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>，其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>p</mi><mrow><mi>x</mi><mo separator="true">,</mo><mi>y</mi></mrow></msub><mo>&gt;</mo><mn>0</mn><mi mathvariant="normal">.</mi><mn>0</mn><mn>5</mn></mrow><annotation encoding="application/x-tex">p_{x,y} &gt; 0.05</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.64444em;"></span><span class="strut bottom" style="height:0.9305479999999999em;vertical-align:-0.286108em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">p</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord scriptstyle cramped"><span class="mord mathit">x</span><span class="mpunct">,</span><span class="mord mathit" style="margin-right:0.03588em;">y</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mrel">&gt;</span><span class="mord mathrm">0</span><span class="mord mathrm">.</span><span class="mord mathrm">0</span><span class="mord mathrm">5</span></span></span></span>作为正样本，通过公式一逆推得到目标框。</p>
+<h3 id="fcns-based两个可能的问题"><a class="markdownIt-Anchor" href="#fcns-based两个可能的问题"></a> FCNs-based两个可能的问题</h3>
+<ul>
+<li>
+<p>过大的下采样步长会导致一些样本有低的best possible recall（BPR），因为在下采样的过程中有些小目标就消失了，导致无法召回，所以BPR很低。乍一看FCNs-based面对这个问题可能更加严重因为不可能召回一个在最终的特征图编码上找不到目标位置的目标。但是对于FCOS而言，实验显示，大的下采样步长下，FCNs-based仍旧能够产生很好的BPR，甚至比anchor-based更好。因此BPR实际上不是一个问题。</p>
+</li>
+<li>
+<p>真实目标框的交叠会造成 <strong>intractable ambiguity</strong> 样本，这种模糊的结果会导致目标检测器的效果下降。</p>
+</li>
+</ul>
+<h3 id="fcos存在的问题"><a class="markdownIt-Anchor" href="#fcos存在的问题"></a> FCOS存在的问题</h3>
+<ul>
+<li>
+<p>1、在目标框重叠的时候，一个像素预测哪个目标是不明确的。</p>
+</li>
+<li>
+<p>2、由于在目标框内的所有像素都进行逐像素预测，所以会预测很多的低质量目标框。</p>
+</li>
+</ul>
+<h3 id="fcos的解决方案"><a class="markdownIt-Anchor" href="#fcos的解决方案"></a> FCOS的解决方案</h3>
+<p>   <strong>Multi-level Prediction with FPN for FCOS</strong> 利用FPN的多尺度特征进行分层预测，具体的训练样本的选取遵循以下规则：</p>
+<ul>
+<li>
+<p>1、FeatureMap上在目标框内的点作为正样本</p>
+</li>
+<li>
+<p>2、特征金字塔的不同层预测不用大小的目标，图2所示，0 &lt; max(l, t, r, b) &lt; 64，…</p>
+</li>
+<li>
+<p>3、如果通过第二步的结果还是存在交叠部分的像素，就把交叠部分像素对应的较小目标作为其回归目标</p>
+</li>
+</ul>
+<p>通过上面的第二、三条规则，就能够有效的解决ambiguous样本。</p>
+<p>   <strong>center-ness分支</strong> 使用多尺度特征进行预测后，效果距离anchor-based的目标检测器仍旧有些距离。是由于产生了大量的低质量的检测结果产生的。所谓的 <strong>低质量结果</strong> 就是分类得分的正样本特别高，但是和真实结果的IOU特别小，如图3的左图中红色线下方的点所示。</p>
+<p>  为了解决这个问题，提出了center-ness，公式如下，该公式描述了特征图上的点距离目标中心点的距离，center-ness的取值范围是0~1的，取值越大距离中心越近，考虑为高质量样本点。<strong>在测试的时候，最终用于预测框排序的得分是通过center-ness和相应的分类得分相乘得到的</strong>。如图3右图所示center-ness能够有效的降低远离目标中心的样本点的得分，即减少低质量预测框。最终通过NMS过滤的效果有显著的提升。</p>
+<p>  如何选择样本才能让目标检测有更好的效果，这个是值得探究的问题，如果在训练阶段的样本选择就能够做好，模型的效果就会更好，这个简单的道理就好像，你训练一个二分类模型，你精心挑选了数据和随意挑选了数据的区别是一样的。</p>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/5.jpg" width="42%"></center>
+<center>公式三</center>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/6.jpg" width="82%"></center>
+<center>图3</center>
+<p>   图4中越红色的地方表示center-ness的数值接越近于1，而蓝色的地方表示center-ness接近于0，能够发现center-ness较大值的地方基本都位于图像前景上。</p>
+<center><img src="/RaySue.github.io/2020/04/05/FCOS/7.jpg" width="36%"></center>
+<center>图4</center>
+<h3 id="fcos"><a class="markdownIt-Anchor" href="#fcos"></a> FCOS</h3>
+<p>  最终的损失函数在公式二的基础之上又加了一项center-ness的损失项，由于center-ness的取值范围是0~1，所以使用了BCE loss进行的训练。</p>
+<p>  为了提高效率，FCOS最终的预测Head在多个特征金字塔层是权值共享的，但是特征金子塔不同层是用于预测不同尺度的目标，所以权值共享不是很合理，所以在每层特征金字塔预测的时候加入了一个可学习的参数s，由于对回归部分使用exp进行了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>[</mo><mn>0</mn><mo separator="true">,</mo><mo>+</mo><mi>i</mi><mi>n</mi><mi>f</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">[0, +inf)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mopen">[</span><span class="mord mathrm">0</span><span class="mpunct">,</span><span class="mord">+</span><span class="mord mathit">i</span><span class="mord mathit">n</span><span class="mord mathit" style="margin-right:0.10764em;">f</span><span class="mclose">)</span></span></span></span>的处理，所以加入可学习的参数后为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>e</mi><mi>x</mi><mi>p</mi><mo>(</mo><mrow><msub><mi>s</mi><mi>i</mi></msub><mi>x</mi></mrow><mo>)</mo></mrow><annotation encoding="application/x-tex">exp({s_i x})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1em;vertical-align:-0.25em;"></span><span class="base textstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">x</span><span class="mord mathit">p</span><span class="mopen">(</span><span class="mord textstyle uncramped"><span class="mord"><span class="mord mathit">s</span><span class="vlist"><span style="top:0.15em;margin-right:0.05em;margin-left:0em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathit">x</span></span><span class="mclose">)</span></span></span></span>，对效果有很小的提升。</p>
+<h2 id="结论"><a class="markdownIt-Anchor" href="#结论"></a> 结论</h2>
+<p>  我们提出了一个anchor_free并且proposal-free的一阶段目标检测模型FCOS。FCOS超过了目前普遍的anchor-based一阶段检测模型，包括RetinaNet，YOLO和SSD，而且模型设计更加简单。FCOS完全避开了关于锚点框的计算和超参数的调参工作。通过逐像素预测的方式解决了目标检测的问题。类似于其他密集预测任务中的语义分割问题。FCOS在众多一阶段检测器中也到达了最好的效果。而且FCOS也可以用作两阶段目标检测器中Faster R-CNN中的RPN并大幅超过了原有的表现。由于FCOS的有效性和高效率，我们希望能够被看作一个鲁棒的且简单的能够替换目前主流anchor-based的目标检测器。我们也相信FCOS能够被扩展到许多其他的实例识别的任务中。</p>
+<h2 id="三省paper"><a class="markdownIt-Anchor" href="#三省paper"></a> 三省Paper</h2>
+<p>Q:</p>
+<ol>
+<li>FCOS的中心思想是什么？</li>
+<li>FCOS设计过程有哪些问题，又是如何解决的？</li>
+<li>FCOS是如何选择样本的，这样做会有哪些问题？</li>
+<li>FCOS的head是怎么样的，损失函数是什么？</li>
+<li>BPR（best possible recall）的概念？</li>
+</ol>
+<hr>
+<p>A:</p>
+<ol>
+<li>
+<p>FCOS的中心思想是利用类似于图像语义分割的逐像素密集预测任务来解决目标检测的问题，这样做的好处有两点，一是为了减少和锚点框相关的复杂的IoU计算，二是不需要对锚点框的超参数进行调参。</p>
+</li>
+<li>
+<p>主要问题有两点，<br>
+1、由于FCOS是在featureMap上逐像素预测的，所以如果两个真是目标框间有重合的话就会产生intractable ambiguity样本，<br>
+2、距离样本中心较远的像素点，往往会产很多低质量的框（score很高，但是和GT的IoU很小）影响模型效果。<br>
+解决方法：<br>
+1、针对第一个问题，利用多层FPN的结构，在不同的层设定预测目标的大小的范围即 0 &lt; max(l, t, r, d) &lt; 64 …如果通过这个过滤后还是存在那么就对重叠部分指定预测较小的目标。<br>
+2、对于第二个问题FCOS引入center-ness的概念，即多加一个channel学习每个像素距离中心点的距离，center-ness的取值范围是0~1，所以用BCE loss来学习。<br>
+在预测阶段使用center-ness和分类的得分进行乘积，用于NMS的最终得分，这样就会去掉很多低质量框的影响。</p>
+</li>
+<li>
+<p>FCOS选择样本的方式是通过两种限制：<br>
+1、空间限制：只有在目标框内的特征图像素才是正样本<br>
+2、尺寸限制：在特征金字塔的不同层，对max(l,t,r,d)设置了不同的范围，只有满足范围在该层才是正样本<br>
+可能的弊端就是尺寸的范围值是固定的，对于过大的目标来说就会产生过多的正样本，而过小的目标来说相应的正样本就少一些，这样对于不同的目标的样本选择方式是不公平的。</p>
+</li>
+<li>
+<p>FCOS的head预测三个分支，分类，正样本回归，和center-ness。<br>
+对应这三个分支的损失函数为：分类对应focal loss，回归使用IoU loss，而center-ness使用BCE loss，对所有层的这三项loss加在一起就是最终的loss。</p>
+</li>
+<li>
+<p>BPR(Best Possible Recalls) 只的是方法本身能够解决的所有情况的最好的召回，说的是某些模型由于自身的结构方法等导师一些样本根本无法召回的情况，比如CenterNet中目标中心点重合的情况。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>Big things have small beginnings.</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/RaySue.github.io/images/WechatPay.jpeg" alt="Ray WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/RaySue.github.io/images/AliPay.jpeg" alt="Ray Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/RaySue.github.io/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/RaySue.github.io/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          
+            <a href="/RaySue.github.io/tags/ICCV-2019/" rel="tag"># ICCV 2019</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/RaySue.github.io/2020/04/03/GhostNet/" rel="next" title="GhostNet：More Features from Cheap Operations">
+                <i class="fa fa-chevron-left"></i> GhostNet：More Features from Cheap Operations
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/RaySue.github.io/2020/05/01/Understanding_Convolutions/" rel="prev" title="Understanding Convolutions">
+                Understanding Convolutions <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/RaySue.github.io/images/avatar.png" alt="Ray">
+            
+              <p class="site-author-name" itemprop="name">Ray</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/RaySue.github.io/archives/">
+                
+                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/RaySue.github.io/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/RaySue.github.io/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/RaySue.github.io/s328937356" title="Wechat &rarr; s328937356"><i class="fa fa-fw fa-wechat"></i>Wechat</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/RaySue.github.io/328937356@qq.com" title="E-Mail &rarr; 328937356@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://blog.csdn.net/weixin_42464187" title="CSDN &rarr; https://blog.csdn.net/weixin_42464187" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://twitter.com/RaySue11" title="Twitter &rarr; https://twitter.com/RaySue11" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#摘要"><span class="nav-number">1.</span> <span class="nav-text"> 摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text"> 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法介绍"><span class="nav-number">3.</span> <span class="nav-text"> 方法介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#fcns-based目标检测"><span class="nav-number">3.1.</span> <span class="nav-text"> FCNs-based目标检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#网络结构"><span class="nav-number">3.1.1.</span> <span class="nav-text"> 网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#损失函数"><span class="nav-number">3.1.2.</span> <span class="nav-text"> 损失函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#推理"><span class="nav-number">3.1.3.</span> <span class="nav-text"> 推理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fcns-based两个可能的问题"><span class="nav-number">3.2.</span> <span class="nav-text"> FCNs-based两个可能的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fcos存在的问题"><span class="nav-number">3.3.</span> <span class="nav-text"> FCOS存在的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fcos的解决方案"><span class="nav-number">3.4.</span> <span class="nav-text"> FCOS的解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fcos"><span class="nav-number">3.5.</span> <span class="nav-text"> FCOS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">4.</span> <span class="nav-text"> 结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三省paper"><span class="nav-number">5.</span> <span class="nav-text"> 三省Paper</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ray</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a></div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="68,88,68" opacity="0.39" zindex="-1" count="128" src="/RaySue.github.io/lib/canvas-nest/canvas-nest-nomobile.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/RaySue.github.io/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/RaySue.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/RaySue.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/RaySue.github.io/js/utils.js?v=7.2.0"></script>
+
+  <script src="/RaySue.github.io/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/RaySue.github.io/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/RaySue.github.io/js/scrollspy.js?v=7.2.0"></script>
+<script src="/RaySue.github.io/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/RaySue.github.io/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('Copied');
+        else $(this).text('Copy failed');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('Copy');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
