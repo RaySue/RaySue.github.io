@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+  
+  
+    
+    
+  <script src="/RaySue.github.io/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link rel="stylesheet" href="/RaySue.github.io/lib/pace/pace-theme-flash.min.css?v=1.0.2">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/RaySue.github.io/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+<link rel="stylesheet" href="/RaySue.github.io/css/main.css?v=7.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/RaySue.github.io/images/apple-touch-icon-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/RaySue.github.io/images/favicon-32x32-next.png?v=7.2.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/RaySue.github.io/images/favicon-16x16-next.png?v=7.2.0">
+
+
+  <link rel="mask-icon" href="/RaySue.github.io/images/logo.svg?v=7.2.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/RaySue.github.io/',
+    scheme: 'Mist',
+    version: '7.2.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+<link href="https://cdn.bootcss.com/KaTeX/0.7.1/katex.min.css" rel="stylesheet">
+
+
+  
+
+
+
+
+  <meta name="keywords" content="CVPR 2020,Paper,Deep Learning">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deep Snake for Real-Time Instance Segmentation">
+<meta property="og:url" content="/2020/03/25/DeepSnake/index.html">
+<meta property="og:site_name" content="SuRui&#39;s Blog">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200318172721101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200318171741963.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200318172721101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200324100236923.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020032510112293.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta property="og:updated_time" content="2020-03-25T14:00:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Deep Snake for Real-Time Instance Segmentation">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200318172721101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="/2020/03/25/DeepSnake/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Deep Snake for Real-Time Instance Segmentation | SuRui's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/RaySue.github.io/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">SuRui's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">We make our own luck.</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+      
+    
+
+    
+
+    <a href="/RaySue.github.io/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-bolt"></i> <br>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="/RaySue.github.io/2020/03/25/DeepSnake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ray">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/RaySue.github.io/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="SuRui's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Deep Snake for Real-Time Instance Segmentation
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+
+          
+          
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2020-03-25 10:00:00 / Modified: 22:00:00" itemprop="dateCreated datePublished" datetime="2020-03-25T10:00:00+08:00">2020-03-25</time>
+            </span>
+          
+
+          
+            
+
+            
+          
+
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/RaySue.github.io/categories/InstanceSeg/" itemprop="url" rel="index"><span itemprop="name">InstanceSeg</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          <br>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <center>
+<img src="https://img-blog.csdnimg.cn/20200318172721101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+</center>
+<hr>
+<a id="more"></a>
+<blockquote>
+<p>  论文借鉴了snake算法，将snake算法做成了轮廓结构化特征学习的方法。DeepSnake是基于轮廓的两阶段实例分割的方法，是接在目标检测后面的方法。通过目标检测的定位来初始化建议轮廓，然后对建议轮廓进行变形，是其对目标更加贴合。论文使用了 <strong>循环卷积</strong> 取得了比通用的图卷积能更好的挖掘轮廓的周期图结构。</p>
+</blockquote>
+<p><a href="https://arxiv.org/abs/2001.01629v2" target="_blank" rel="noopener">https://arxiv.org/abs/2001.01629v2</a></p>
+<p><a href="https://github.com/zju3dv/snake/" target="_blank" rel="noopener">https://github.com/zju3dv/snake/</a></p>
+<h2 id="介绍"><a class="markdownIt-Anchor" href="#介绍"></a> 介绍</h2>
+<p>  DeepSnake可以加在目标检测后面来完成实例分割的，论文中加在了CenterNet的后面构成了新的实例分割模型。该模型可以实时的进行实例分割, 能达到32.3 fps对于512 × 512的图像在 GTX 1080ti GPU上，而且在Cityscapes、Kins和Sbd数据集上表现SOTA。</p>
+<p>  该模型能够达到上述效果的两个原因是：</p>
+<ol>
+<li>该方法能够处理目标检测模型定位错误的问题所以只需要结合一个轻量级的目标检测模型即可。</li>
+<li>基于contour的分割比基于pixel-based的分割具有更少的参数，而且没有Decoder过程。</li>
+</ol>
+<p>  为了增加算法的鲁棒性，DeepSnake算法把传统的对于contour坐标来手工定义能量的snake算法改为了Data-driven manner的算法即基于学习的方法。</p>
+<p>  该文章灵感来自于snake和Fast interactive object annotation with curve-gcn，看来多读论文还是很有好处，否则灵感何来，前两天看来一篇文章说不仅要读自己领域的paper，最好也涉猎一些其他领域的常识性东西，因为很多都是可以迁移过来的，深度学习就借鉴了很多物理领域的知识。</p>
+<p>  DeepSnake根据来自主干网络的图像特征获取轮廓作为输入，并预测对象边界的每个顶点的偏移量。</p>
+<h2 id="循环卷积"><a class="markdownIt-Anchor" href="#循环卷积"></a> 循环卷积</h2>
+<center><img src="https://img-blog.csdnimg.cn/20200318171741963.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70" width="76%"></center>
+&emsp;&emsp;图2，**循环卷积** ，蓝色的节点代表在轮廓上定义的特征，黄色的节点代表卷积核函数，绿色的节点是输出的特征。其中高亮的绿色节点是卷积核和高亮的蓝色输入部门做内积得到的结果，和标准的卷积操作一样。循环卷积输出的特征长度和输入特征长度相同。
+<h2 id="pipeline"><a class="markdownIt-Anchor" href="#pipeline"></a> Pipeline</h2>
+<center><img src="https://img-blog.csdnimg.cn/20200318172721101.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70" width="96%"></center>
+<p>  图3，<strong>基于轮廓建议的实例分割模型</strong> ，（a)DeepSnake模型由三部分组成：一个主干网络，一个融合模块和一个预测的头模块。模型以轮廓作为输入，输出轮廓每个顶点的偏移量来对轮廓进行变形。（b）基于DeepSnake模型论文提出了一个两阶段的实例分割流程：初始化建议轮廓，轮廓变形。通过检测器得到的建议框得到一个菱形的轮廓， <strong>然后通过DeepSnake模型对四个顶点进行变形得到包围对象的极端点。</strong> 然后通过极端点构建一个八边形，第一阶段结束。这个八边形就是初始化的轮廓， <strong>DeepSnake模型对其进行迭代的变形来贴合目标的边界</strong> 。</p>
+<h3 id="网络结构"><a class="markdownIt-Anchor" href="#网络结构"></a> 网络结构</h3>
+<p>  图3 展示了网络结构原理图的细节，DeepSnake网络由三部分组成：一个主干网络、一个融合模块、和一个预测头。其中主干网络由8个CirConv-Bn-ReLU组成，所有层直接都使用了残差跳跃连接的方式，CirConv就是循环卷积。融合模块的功能是融合contour上所有点的多尺度的信息。它合并了主干网络中所有层的特征，然后传入到1x1的卷积层中，再进行一次最大池化操作，这样融合的特征就和每个顶点的特征合并在了一起。预测头对于顶点特征采用了3个1x1的卷积层，然后映射到每个顶点的偏移量上输出。</p>
+<h3 id="第一阶段建议contour的产生"><a class="markdownIt-Anchor" href="#第一阶段建议contour的产生"></a> 第一阶段：建议contour的产生</h3>
+<p>  给定一个目标检测框，从中提取四个点分别是上下左右四条边的中点，记为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>{</mo><msubsup><mi>x</mi><mi>i</mi><mrow><mi>b</mi><mi>b</mi></mrow></msubsup><mi mathvariant="normal">∣</mi><mi>i</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mn>3</mn><mo separator="true">,</mo><mn>4</mn><mo>}</mo></mrow><annotation encoding="application/x-tex">\{x^{bb}_i|i=1,2,3,4\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.107772em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mopen">{</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">b</span><span class="mord mathit">b</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm">∣</span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathrm">4</span><span class="mclose">}</span></span></span></span>，连接这四个点得到一个菱形轮廓，之后把这个菱形轮廓输入到DeepSnake中。</p>
+<p>  DeepSnake通过对菱形轮廓进行推理输出对应菱形轮廓4个顶点的4个偏移量，把通过菱形轮廓和偏移量计算得到的四个极端点记为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>{</mo><msubsup><mi>x</mi><mi>i</mi><mrow><mi>e</mi><mi>x</mi></mrow></msubsup><mi mathvariant="normal">∣</mi><mi>i</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mn>3</mn><mo separator="true">,</mo><mn>4</mn><mo>}</mo></mrow><annotation encoding="application/x-tex">\{x^{ex}_i|i=1,2,3,4\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.75em;"></span><span class="strut bottom" style="height:1.008664em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mopen">{</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">x</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mord mathrm">∣</span><span class="mord mathit">i</span><span class="mrel">=</span><span class="mord mathrm">1</span><span class="mpunct">,</span><span class="mord mathrm">2</span><span class="mpunct">,</span><span class="mord mathrm">3</span><span class="mpunct">,</span><span class="mord mathrm">4</span><span class="mclose">}</span></span></span></span>，这四个偏移量也就是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>x</mi><mi>i</mi><mrow><mi>e</mi><mi>x</mi></mrow></msubsup><mo>−</mo><msubsup><mi>x</mi><mi>i</mi><mrow><mi>b</mi><mi>b</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">x^{ex}_i - x^{bb}_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.107772em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">e</span><span class="mord mathit">x</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span><span class="mbin">−</span><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">b</span><span class="mord mathit">b</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>。</p>
+<p>  实际上，为了提取更多的上下文信息，菱形轮廓是均匀上采样得到的40个点，然后DeepSnake相应的输出40个offset。损失函数只考虑<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>x</mi><mi>i</mi><mrow><mi>b</mi><mi>b</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">x^{bb}_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="strut" style="height:0.849108em;"></span><span class="strut bottom" style="height:1.107772em;vertical-align:-0.258664em;"></span><span class="base textstyle uncramped"><span class="mord"><span class="mord mathit">x</span><span class="vlist"><span style="top:0.258664em;margin-left:0em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle cramped"><span class="mord mathit">i</span></span></span><span style="top:-0.363em;margin-right:0.05em;"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span><span class="reset-textstyle scriptstyle uncramped"><span class="mord scriptstyle uncramped"><span class="mord mathit">b</span><span class="mord mathit">b</span></span></span></span><span class="baseline-fix"><span class="fontsize-ensurer reset-size5 size5"><span style="font-size:0em;">​</span></span>​</span></span></span></span></span></span>的偏移量。（这块走的网络和第二阶段走的网络是一个吗？）</p>
+<p>  通过得到的四个极端点得到4个线段，连接线段的端点，得到一个八边形。具体来说，4个极端点对应一个水平框，对于每个极端点沿着相应水平框边的方向，向两边延伸为一个线段，线段的长度为相应边长的1/4，线段延伸如果遇到水平框端点就截断。然后连接四条线段的端点，就得到了八边形。</p>
+<h3 id="第二阶段contour变形"><a class="markdownIt-Anchor" href="#第二阶段contour变形"></a> 第二阶段：contour变形</h3>
+<p>  先对八边形采样N个点，从极端点的顶点作为第一个点开始沿着边均匀采样，gt也是同样的采样方式。然利用图3所示的网络结构，通过循环卷积进行特征提取，然后通过1x1卷积映射到偏移量上。实验中论文设置N=128，能够均匀的覆盖绝大多数的物体形状了。</p>
+<p>  一次就能准确的回归偏移量是一件很有挑战的事，尤其是那种顶点距离对象较远的情况，为了解决这个问题 ，论文使用了可迭代的方法，具体来说，先基于当前的contour预测N个偏移量，然后通过该偏移量对contour进行第一轮变形作为新的contour，重复这个过程，论文实验中迭代的次数为三次。</p>
+<p>  contour也是目标空间扩展性的另外一种表示方法。通过对其进行变形是能够解决检测器的定位问题的。</p>
+<h3 id="处理多组件的对象"><a class="markdownIt-Anchor" href="#处理多组件的对象"></a> 处理多组件的对象</h3>
+<center><img src="https://img-blog.csdnimg.cn/20200324100236923.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70" width="66%"></center>
+<p>  由于遮挡，许多实例不只是一个完全连接的组件，而是可能由遮挡部分切开的多个连接组件组成一个实例。而<strong>一个轮廓只能用于描述一个连接的组件</strong>，为了解决这个问题作者建议对目标框内的目标组件进行检测。具体来说就是使用一个检测框通过ROIAlign来提取特征映射图上的特征，然后对特征映射图加一个检测分支，来产生组件的框。我们的方法包含最终的整个目标形状通过对同一个目标框内的contour组件进行合并。</p>
+<h3 id="图卷积和循环卷积效果对比"><a class="markdownIt-Anchor" href="#图卷积和循环卷积效果对比"></a> 图卷积和循环卷积效果对比</h3>
+<center><img src="https://img-blog.csdnimg.cn/2020032510112293.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70" width="76%"></center>
+<p>  上面的是图卷积得到的结果，下面的图是循环卷积得到的结果在Sbd数据集上。可以发现循环卷积两轮迭代的结果已经优于图卷积三轮迭代的结果了。</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<ul>
+<li>
+<p>该方法需要结合目标检测方法使用。</p>
+</li>
+<li>
+<p>该方法能够在一定程度解决目标检测定位错误的问题。</p>
+</li>
+<li>
+<p>和之前的深度学习的分割相比，该方法输入参数更少，且不需要Decoder过程。</p>
+</li>
+<li>
+<p>和直接对边界点进行回归相比，效果好很多。</p>
+</li>
+<li>
+<p>同过对snake算法进行改进，使其变为可学习的数据驱动的方法，鲁棒性更强。</p>
+</li>
+<li>
+<p>论文对比了图卷积和循环卷积，在该任务上循环卷积的效果要优于图卷积。</p>
+</li>
+</ul>
+<p>轮廓 - contour</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+      <div>
+        <div id="reward-container">
+  <div>Big things have small beginnings.</div>
+  <button id="reward-button" disable="enable" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/RaySue.github.io/images/WechatPay.jpeg" alt="Ray WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+    
+      
+      
+        
+      
+      <div style="display: inline-block">
+        <img src="/RaySue.github.io/images/AliPay.jpeg" alt="Ray Alipay">
+        <p>Alipay</p>
+      </div>
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        
+          
+        
+        <div class="post-tags">
+          
+            <a href="/RaySue.github.io/tags/CVPR-2020/" rel="tag"># CVPR 2020</a>
+          
+            <a href="/RaySue.github.io/tags/Paper/" rel="tag"># Paper</a>
+          
+            <a href="/RaySue.github.io/tags/Deep-Learning/" rel="tag"># Deep Learning</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/RaySue.github.io/2019/11/05/CenterNet/" rel="next" title="CenterNet: Objects as Points">
+                <i class="fa fa-chevron-left"></i> CenterNet: Objects as Points
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/RaySue.github.io/2020/03/29/ATSS/" rel="prev" title="ATSS：Adaptive Training Sample Selection">
+                ATSS：Adaptive Training Sample Selection <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/RaySue.github.io/images/avatar.png" alt="Ray">
+            
+              <p class="site-author-name" itemprop="name">Ray</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/RaySue.github.io/archives/">
+                
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/RaySue.github.io/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/RaySue.github.io/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/RaySue.github.io/s328937356" title="Wechat &rarr; s328937356"><i class="fa fa-fw fa-wechat"></i>Wechat</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="/RaySue.github.io/328937356@qq.com" title="E-Mail &rarr; 328937356@qq.com"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://blog.csdn.net/weixin_42464187" title="CSDN &rarr; https://blog.csdn.net/weixin_42464187" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>CSDN</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://twitter.com/RaySue11" title="Twitter &rarr; https://twitter.com/RaySue11" rel="noopener" target="_blank"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text"> 介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#循环卷积"><span class="nav-number">2.</span> <span class="nav-text"> 循环卷积</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pipeline"><span class="nav-number">3.</span> <span class="nav-text"> Pipeline</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络结构"><span class="nav-number">3.1.</span> <span class="nav-text"> 网络结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一阶段建议contour的产生"><span class="nav-number">3.2.</span> <span class="nav-text"> 第一阶段：建议contour的产生</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二阶段contour变形"><span class="nav-number">3.3.</span> <span class="nav-text"> 第二阶段：contour变形</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理多组件的对象"><span class="nav-number">3.4.</span> <span class="nav-text"> 处理多组件的对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#图卷积和循环卷积效果对比"><span class="nav-number">3.5.</span> <span class="nav-text"> 图卷积和循环卷积效果对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ray</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a></div>
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="68,88,68" opacity="0.39" zindex="-1" count="128" src="/RaySue.github.io/lib/canvas-nest/canvas-nest-nomobile.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/RaySue.github.io/lib/jquery/index.js?v=3.4.1"></script>
+
+  
+  <script src="/RaySue.github.io/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/RaySue.github.io/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/RaySue.github.io/js/utils.js?v=7.2.0"></script>
+
+  <script src="/RaySue.github.io/js/motion.js?v=7.2.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/RaySue.github.io/js/schemes/muse.js?v=7.2.0"></script>
+
+
+
+
+  
+  <script src="/RaySue.github.io/js/scrollspy.js?v=7.2.0"></script>
+<script src="/RaySue.github.io/js/post-details.js?v=7.2.0"></script>
+
+
+
+  
+
+
+  <script src="/RaySue.github.io/js/next-boot.js?v=7.2.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').not('.gist .highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      const selection = document.getSelection();
+      const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false;
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('Copied');
+        else $(this).text('Copy failed');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+      if (selected) {
+        selection.removeAllRanges();
+        selection.addRange(selected);
+      }
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('Copy');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+
+
+<script>
+!function (e, t, a) {function r() {for (var e = 0; e < s.length; e++) s[e].alpha <= 0 ? (t.body.removeChild(s[e].el), s.splice(e, 1)) : (s[e].y--, s[e].scale += .004, s[e].alpha -= .013, s[e].el.style.cssText = "left:" + s[e].x + "px;top:" + s[e].y + "px;opacity:" + s[e].alpha + ";transform:scale(" + s[e].scale + "," + s[e].scale + ") rotate(45deg);background:" + s[e].color + ";z-index:99999");requestAnimationFrame(r)}function n() {var t = "function" == typeof e.onclick && e.onclick;e.onclick = function (e) {t && t(), o(e)}}function o(e) {var a = t.createElement("div");a.className = "heart", s.push({el: a,x: e.clientX - 5,y: e.clientY - 5,scale: 1,alpha: 1,color: c()}), t.body.appendChild(a)}function i(e) {var a = t.createElement("style");a.type = "text/css";try {a.appendChild(t.createTextNode(e))} catch (t) {a.styleSheet.cssText = e}t.getElementsByTagName("head")[0].appendChild(a)}function c() {return "rgb(" + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + ")"}var s = [];e.requestAnimationFrame = e.requestAnimationFrame || e.webkitRequestAnimationFrame || e.mozRequestAnimationFrame || e.oRequestAnimationFrame || e.msRequestAnimationFrame || function (e) {setTimeout(e, 1e3 / 60)}, i(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"), n(), r()}(window, document);
+</script>
+
+
+<script src="/RaySue.github.io/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/RaySue.github.io/live2dw/assets/wanko.model.json"},"display":{"position":"left","width":160,"height":320},"mobile":{"show":true},"log":false});</script></body>
+</html>
+

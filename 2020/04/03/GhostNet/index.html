@@ -102,14 +102,13 @@
 
 
 
-  <meta name="description" content="GhostNet:More Features from Cheap Operations Code:https://github.com/huawei-noah/ghostnet">
-<meta name="keywords" content="CVPR 2020,Paper,Deep Learning">
+  <meta name="keywords" content="CVPR 2020,Paper,Deep Learning">
 <meta property="og:type" content="article">
 <meta property="og:title" content="GhostNet：More Features from Cheap Operations">
 <meta property="og:url" content="/2020/04/03/GhostNet/index.html">
 <meta property="og:site_name" content="SuRui&#39;s Blog">
-<meta property="og:description" content="GhostNet:More Features from Cheap Operations Code:https://github.com/huawei-noah/ghostnet">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="/RaySue.github.io/2020/04/03/GhostNet/head.jpg">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="/RaySue.github.io/2020/04/03/GhostNet/1.jpg">
 <meta property="og:image" content="/RaySue.github.io/2020/04/03/GhostNet/2.jpg">
@@ -125,8 +124,7 @@
 <meta property="og:updated_time" content="2020-04-03T06:00:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GhostNet：More Features from Cheap Operations">
-<meta name="twitter:description" content="GhostNet:More Features from Cheap Operations Code:https://github.com/huawei-noah/ghostnet">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70">
+<meta name="twitter:image" content="/RaySue.github.io/2020/04/03/GhostNet/head.jpg">
 
 
 
@@ -186,6 +184,9 @@
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+
+
 
   
   
@@ -460,12 +461,13 @@
       
 
       
-        <p>GhostNet:More Features from Cheap Operations</p>
-<p>Code:<a href="https://github.com/huawei-noah/ghostnet" target="_blank" rel="noopener">https://github.com/huawei-noah/ghostnet</a></p>
+        <center><img src="/RaySue.github.io/2020/04/03/GhostNet/head.jpg"></center>
+<hr>
 <a id="more"></a>
 <blockquote>
 <p>  发现一个点并解决就是一篇CVPR，该文章主要发现了优秀的网络的特点是feature map提取过程中的冗余性，这种冗余性体现在很多成对的feature map间很像，就好像彼此的“ghost”，而这种特征冗余性对于理解图像来说还是必要的，所以文章把feature map分为两种，一种是本质特征，一种是“ghost”，其中“ghost”可以通过低廉的线性运算来完成，先通过普通的卷积提取本质特征，再通过线性变换对特征进行增强，这样大大减少了参数和运算量。感觉上是对原始的卷积特征一部分保留，一部分用深度可分离卷积代替。Ghost module是一个即插即用的模块，可以用来替换分类网络的卷积层从而获得更高的精度。d是ghost模块的卷积核尺寸，s是ghost模块通过卷积对同一个本质特征映射图产生ghost特征映射图的数目。通过MSE来对比特征映射图之间的差异能够发现特征图间的相关性。</p>
 </blockquote>
+<p><a href="https://github.com/huawei-noah/ghostnet" target="_blank" rel="noopener">https://github.com/huawei-noah/ghostnet</a></p>
 <h2 id="摘要"><a class="markdownIt-Anchor" href="#摘要"></a> 摘要</h2>
 <p>  在嵌入式设备上部署卷积神经网络（CNNs）是比较难的，因为设备的内存和算力资源很有限。对于那些成功的CNNs一般层数角度，一个特点就是feature map是冗余的，但是这种情况很少在网络设计上被察觉。本文提出了一个新颖的Ghost模块通过低廉运算的操作就能够得到更多的feature maps。基于固有的feature map集合，我们使用一系列的低廉运算的线性变换来产生许多ghost feature map能够彻底的揭示潜在固有特征的信息。我们提出的Ghost 模块可以作为一个即插即用的模块来提高已有的神经网络。通过堆叠Ghost 模块得到Ghost bottleneck，然后就很容易的得到了一个轻量级的GhostNet。在基准上实验的结果证明了我们提出的Ghost模块是一个令人印象深刻的替换baseline卷积层的方式，并且我们的GhostNet在ImageNet ILSVRC-2012分类数据集上，比MobileNetv3有更高的识别准确率（75.7%的top 1准确率）而且需要更少的计算量。</p>
 <center><img src="https://img-blog.csdnimg.cn/20200404114754176.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjQ2NDE4Nw==,size_16,color_FFFFFF,t_70" width="66%"></center>
@@ -612,10 +614,6 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/RaySue.github.io/2020/04/05/FCOS/" rel="prev" title="FCOS: Fully Convolutional One-Stage Object Detection">
-                FCOS: Fully Convolutional One-Stage Object Detection <i class="fa fa-chevron-right"></i>
-              </a>
-            
           </div>
         </div>
       
@@ -685,7 +683,7 @@
                 
                   <a href="/RaySue.github.io/archives/">
                 
-                    <span class="site-state-item-count">9</span>
+                    <span class="site-state-item-count">10</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
@@ -706,7 +704,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">2</span>
+                      
+                    
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">categories</span>
                   </a>
                 </div>
@@ -733,7 +733,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">5</span>
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">tags</span>
                   </a>
                 </div>
@@ -1052,5 +1054,13 @@
 
   
 
-</body>
+
+
+<script>
+!function (e, t, a) {function r() {for (var e = 0; e < s.length; e++) s[e].alpha <= 0 ? (t.body.removeChild(s[e].el), s.splice(e, 1)) : (s[e].y--, s[e].scale += .004, s[e].alpha -= .013, s[e].el.style.cssText = "left:" + s[e].x + "px;top:" + s[e].y + "px;opacity:" + s[e].alpha + ";transform:scale(" + s[e].scale + "," + s[e].scale + ") rotate(45deg);background:" + s[e].color + ";z-index:99999");requestAnimationFrame(r)}function n() {var t = "function" == typeof e.onclick && e.onclick;e.onclick = function (e) {t && t(), o(e)}}function o(e) {var a = t.createElement("div");a.className = "heart", s.push({el: a,x: e.clientX - 5,y: e.clientY - 5,scale: 1,alpha: 1,color: c()}), t.body.appendChild(a)}function i(e) {var a = t.createElement("style");a.type = "text/css";try {a.appendChild(t.createTextNode(e))} catch (t) {a.styleSheet.cssText = e}t.getElementsByTagName("head")[0].appendChild(a)}function c() {return "rgb(" + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + "," + ~~(255 * Math.random()) + ")"}var s = [];e.requestAnimationFrame = e.requestAnimationFrame || e.webkitRequestAnimationFrame || e.mozRequestAnimationFrame || e.oRequestAnimationFrame || e.msRequestAnimationFrame || function (e) {setTimeout(e, 1e3 / 60)}, i(".heart{width: 10px;height: 10px;position: fixed;background: #f00;transform: rotate(45deg);-webkit-transform: rotate(45deg);-moz-transform: rotate(45deg);}.heart:after,.heart:before{content: '';width: inherit;height: inherit;background: inherit;border-radius: 50%;-webkit-border-radius: 50%;-moz-border-radius: 50%;position: fixed;}.heart:after{top: -5px;}.heart:before{left: -5px;}"), n(), r()}(window, document);
+</script>
+
+
+<script src="/RaySue.github.io/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/RaySue.github.io/live2dw/assets/wanko.model.json"},"display":{"position":"left","width":160,"height":320},"mobile":{"show":true},"log":false});</script></body>
 </html>
+
